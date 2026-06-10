@@ -1,0 +1,176 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+{% load widget_tweaks %}
+<!-- Librerías necesarias -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Registrar Membresía</h5>
+    </div>
+    <div class="card-body">
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3 position-relative">
+        <label for="cliente_input">Buscar Cliente</label>
+        <input type="text" id="cliente_input" class="form-control" placeholder="Escriba nombre o DNI..." autocomplete="off">
+        <input type="hidden" name="cliente_id" id="cliente_id"> <!-- Se enviará el ID aquí -->
+
+        <div id="sugerencias" class="list-group position-absolute w-100 mt-1" style="z-index: 1000;"></div>
+        </div>
+
+            <!-- Fecha inicio y fin -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.fecha_inicio.label_tag }}
+                {{ form.fecha_inicio|add_class:"form-control" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ form.fecha_fin.label_tag }}
+                {{ form.fecha_fin|add_class:"form-control" }}
+              </div>
+            </div>
+
+            <!-- Plan, tipo, tipo_pago -->
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                {{ form.plan.label_tag }}
+                {{ form.plan|add_class:"form-control" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.tipo.label_tag }}
+                {{ form.tipo|add_class:"form-control" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.tipo_pago.label_tag }}
+                {{ form.tipo_pago|add_class:"form-control" }}
+              </div>
+            </div>
+
+            <!-- Montos -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.monto_total.label_tag }}
+                {{ form.monto_total|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ form.primer_pago.label_tag }}
+                {{ form.primer_pago|add_class:"form-control shadow-sm" }}
+              </div>
+            </div>
+
+            <!-- Pagos a plazos -->
+            <h5 class="text-primary mt-3">Pagos a plazos</h5>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                {{ form.monto_1.label_tag }} {{ form.monto_1|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.monto_2.label_tag }} {{ form.monto_2|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.monto_3.label_tag }} {{ form.monto_3|add_class:"form-control shadow-sm" }}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                {{ form.fecha_pago_1.label_tag }} {{ form.fecha_pago_1|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.fecha_pago_2.label_tag }} {{ form.fecha_pago_2|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.fecha_pago_3.label_tag }} {{ form.fecha_pago_3|add_class:"form-control shadow-sm" }}
+              </div>
+            </div>
+
+            <!-- Ficha entrenamiento -->
+            <div class="form-check mb-3">
+              {{ form.ficha_entrenamiento|add_class:"form-check-input" }}
+              {{ form.ficha_entrenamiento.label_tag }}
+            </div>
+
+            <!-- Botón guardar -->
+            <div class="text-end">
+              <button type="submit" class="btn btn-success px-4">
+                Guardar Membresía
+              </button>
+            </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Mostrar alertas si hay mensajes -->
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    {% for message in messages %}
+      Swal.fire({
+        icon: "{% if 'success' in message.tags %}success{% elif 'error' in message.tags %}error{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}",
+        title: "{{ message }}",
+        confirmButtonText: 'Aceptar'
+      });
+    {% endfor %}
+  });
+</script>
+{% endif %}
+
+<!-- Activar Select2 AJAX -->
+<script>
+  $(document).ready(function () {
+    $('#cliente_input').on('keyup', function () {
+      const term = $(this).val();
+      if (term.length < 2) {
+        $('#sugerencias').hide().empty();
+        return;
+      }
+
+      $.ajax({
+        url: "{% url 'buscar_clientes' %}",
+        data: { term: term },
+        success: function (data) {
+          let resultados = data.results;
+          let html = '';
+
+          if (resultados.length === 0) {
+            html = '<a href="#" class="list-group-item list-group-item-action disabled">Sin coincidencias</a>';
+          } else {
+            resultados.forEach(cliente => {
+              html += `<a href="#" class="list-group-item list-group-item-action" data-id="${cliente.id}">${cliente.text}</a>`;
+            });
+          }
+
+          $('#sugerencias').html(html).show();
+        }
+      });
+    });
+
+    // Al hacer clic en una sugerencia
+    $('#sugerencias').on('click', '.list-group-item', function (e) {
+      e.preventDefault();
+      const id = $(this).data('id');
+      const nombre = $(this).text();
+      $('#cliente_input').val(nombre);
+      $('#cliente_id').val(id);
+      $('#sugerencias').hide();
+    });
+
+    // Ocultar si hace clic fuera
+    $(document).click(function (e) {
+      if (!$(e.target).closest('#cliente_input, #sugerencias').length) {
+        $('#sugerencias').hide();
+      }
+    });
+  });
+</script>
+
+{% endblock %}

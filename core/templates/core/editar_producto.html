@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="m-0">Editar Producto</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" id="editProductForm">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <div class="mb-3">
+                    <label class="form-label">Añadir al Stock</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="stockAdd" min="1" value="0">
+                        <button type="button" class="btn btn-success" id="btnAddStock">
+                            <i class="fas fa-plus"></i> Añadir
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+                    <a href="{% url 'listado_productos' %}" class="btn btn-secondary">Volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('btnAddStock').addEventListener('click', function() {
+    let stockAdd = parseInt(document.getElementById('stockAdd').value) || 0;
+    let currentStock = parseInt(document.getElementById('id_stock').value) || 0;
+    
+    if (stockAdd > 0) {
+        document.getElementById('id_stock').value = currentStock + stockAdd;
+        // No reiniciar el input a 0, solo limpiar
+        document.getElementById('stockAdd').value = '';
+    }
+});
+
+// Validar el formulario antes de enviar
+document.getElementById('editProductForm').addEventListener('submit', function(e) {
+    let stockField = document.getElementById('id_stock');
+    if (stockField.value === '' || stockField.value === '0') {
+        // Si el stock está vacío o es 0, usar el valor original
+        stockField.value = '{{ producto.stock }}';
+    }
+});
+</script>
+{% endblock %}

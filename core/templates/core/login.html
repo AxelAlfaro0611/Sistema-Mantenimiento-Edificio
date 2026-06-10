@@ -1,0 +1,75 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Iniciar sesión</title>
+    <!-- Estilos de SB Admin 2 -->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,700" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container mt-5">
+
+        <!-- Fila centrada -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-6 col-lg-8 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-5">
+                        <!-- Encabezado -->
+                        <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">Sistema de Mantenimiento de Edificio</h1>
+                        </div>
+
+                        <!-- Formulario de login -->
+                        <form class="user" method="POST" action="">
+                            {% csrf_token %}
+                            {% if form.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    Usuario o contraseña incorrectos.
+                                </div>
+                            {% endif %}
+
+                            <div class="form-group">
+                                {{ form.username.label_tag }}
+                                {{ form.username|add_class:"form-control form-control-user" }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.password.label_tag }}
+                                {{ form.password|add_class:"form-control form-control-user" }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-user btn-block">
+                                Iniciar sesión
+                            </button>
+                        </form>
+
+                        <hr>
+                        <div class="text-center">
+                            <a class="small" href="#">¿Olvidaste tu contraseña?</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+</body>
+</html>

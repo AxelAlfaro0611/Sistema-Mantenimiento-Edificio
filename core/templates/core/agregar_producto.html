@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <h3>Agregar Producto</h3>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-success">Guardar Producto</button>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Compras e insumos</h6>
+        <a href="{% url 'compra-create' %}" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Registrar compra</a>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row mb-3">
+            <div class="col-md-2">
+                <select name="anio" class="form-control">
+                    <option value="">Año</option>
+                    {% for anio in anios_disponibles %}
+                    <option value="{{ anio }}" {% if anio|stringformat:"s" == anio_seleccionado|stringformat:"s" %}selected{% endif %}>{{ anio }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="mes" class="form-control">
+                    <option value="">Mes</option>
+                    {% for num, nombre in meses_disponibles %}
+                    <option value="{{ num }}" {% if mes_seleccionado|stringformat:"s" == num|stringformat:"s" %}selected{% endif %}>{{ nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="equipo" class="form-control">
+                    <option value="">Todos los equipos</option>
+                    {% for eq in equipos_filtro %}
+                    <option value="{{ eq.id }}" {% if equipo_seleccionado|stringformat:"s" == eq.id|stringformat:"s" %}selected{% endif %}>{{ eq.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Buscar descripción, proveedor...">
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary btn-block">Filtrar</button></div>
+        </form>
+
+        {% if total_filtrado %}
+        <div class="alert alert-info py-2">Total filtrado: <strong>S/ {{ total_filtrado|floatformat:2 }}</strong></div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table id="tabla-datos" class="table table-bordered table-hover">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                        <th>Equipo / Área</th>
+                        <th>Proveedor</th>
+                        <th>Cantidad</th>
+                        <th>Ubicación inst.</th>
+                        <th>Costo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in compras %}
+                    <tr>
+                        <td>{{ c.fecha_compra|date:"d/m/Y" }}</td>
+                        <td>{{ c.descripcion }}</td>
+                        <td>{% if c.equipo %}{{ c.equipo.nombre }}{% else %}{{ c.area|default:"—" }}{% endif %}</td>
+                        <td>{{ c.proveedor }}</td>
+                        <td>{{ c.cantidad }} {{ c.get_unidad_display }}</td>
+                        <td>{{ c.ubicacion_instalacion|default:"—" }}</td>
+                        <td>S/ {{ c.costo|floatformat:2 }}</td>
+                        <td>
+                            <a href="{% url 'compra-edit' c.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'compra-delete' c.id %}" class="btn btn-danger btn-sm btn-eliminar"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$('#tabla-datos').DataTable({ language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay compras registradas." }, order: [[0, 'desc']] });
+$('.btn-eliminar').click(function(e) {
+    e.preventDefault();
+    Swal.fire({ title: '¿Eliminar compra?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' })
+    .then(r => { if (r.isConfirmed) window.location.href = $(this).attr('href'); });
+});
+</script>
+{% endblock %}

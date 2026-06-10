@@ -1,0 +1,400 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="h3 mb-4 text-gray-800">Historial de Ventas</h2>
+
+    <!-- Filtros -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filtros de búsqueda</h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar por cliente o producto" value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="tipo_venta" class="form-control">
+                        <option value="">Todos los tipos</option>
+                        <option value="normal" {% if tipo_venta == 'normal' %}selected{% endif %}>Venta normal</option>
+                        <option value="separado" {% if tipo_venta == 'separado' %}selected{% endif %}>Producto separado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cards de resumen -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Ventas</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_ventas }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Productos Separados</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_separados }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Ventas del Día</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ventas_dia }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nueva card para ganancias -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-header py-2">
+                    <select id="periodoGanancias" class="form-control form-control-sm">
+                        <option value="dia">Ganancias del día</option>
+                        <option value="semana">Ganancias de la semana</option>
+                        <option value="mes">Ganancias del mes</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1" id="periodoLabel">Ganancias</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="montoGanancias">S/ {{ ganancias_periodo }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de ventas -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="ventasTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Producto</th>
+                            <th>Total</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for venta in ventas %}
+                        <tr>
+                            <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+                            <td>{{ venta.cliente.nombres }} {{ venta.cliente.apellidos }}</td>
+                            <td>{{ venta.producto.nombre }}</td>
+                            <td>S/ {{ venta.total }}</td>
+                            <td>{{ venta.get_tipo_display }}</td>
+                            <td>
+                                {% if venta.tipo == 'separado' %}
+                                    <span class="badge badge-{% if venta.tiene_deuda %}warning{% else %}success{% endif %}">
+                                        {{ venta.estado_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ venta.get_estado_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if venta.tipo == 'separado' and venta.tiene_deuda %}
+                                        <a href="{% url 'registrar_pago' venta.id %}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-dollar-sign"></i>
+                                        </a>
+                                    {% endif %}
+                                    <button type="button" 
+                                            class="btn btn-sm btn-info" 
+                                            data-toggle="modal" 
+                                            data-target="#historialModal{{ venta.id }}">
+                                        <i class="fas fa-history"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modales para todas las ventas -->
+            {% for venta in ventas %}
+                <div class="modal fade" id="historialModal{{ venta.id }}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-history"></i> 
+                                    Historial de Pagos - {{ venta.producto.nombre }}
+                                </h5>
+                                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Información de la venta -->
+                                <div class="row mb-4">
+                                    <div class="col-md-4">
+                                        <div class="card bg-primary text-white">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Total Venta</h6>
+                                                <h4>S/ {{ venta.total }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-success text-white">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Pagado</h6>
+                                                <h4>S/ {{ venta.monto_pagado }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if venta.tiene_deuda %}
+                                    <div class="col-md-4">
+                                        <div class="card bg-warning text-white">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Pendiente</h6>
+                                                <h4>S/ {{ venta.deuda_pendiente }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Tabla de pagos -->
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Monto</th>
+                                                <th>Método</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for pago in venta.historial_pagos %}
+                                            <tr>
+                                                <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
+                                                <td>S/ {{ pago.monto_pagado }}</td>
+                                                <td>{{ pago.metodo_pago }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">No hay pagos registrados</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                {% if venta.tiene_deuda %}
+                                <a href="{% url 'registrar_pago' venta.id %}" class="btn btn-warning">
+                                    <i class="fas fa-dollar-sign"></i> Registrar nuevo pago
+                                </a>
+                                {% endif %}
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Paginación -->
+            {% if ventas.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if ventas.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ ventas.previous_page_number }}">&laquo;</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in ventas.paginator.page_range %}
+                    <li class="page-item {% if ventas.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if ventas.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ ventas.next_page_number }}">&raquo;</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap4.min.css"/>
+<style>
+    .dt-buttons .btn {
+        margin-right: 5px;
+        border-radius: 4px !important;
+    }
+    .dt-button-collection {
+        padding: 8px !important;
+        border-radius: 4px !important;
+        min-width: 150px !important;
+    }
+    .dt-button-collection .dt-button {
+        display: block;
+        width: 100%;
+        margin-bottom: 4px;
+        border-radius: 4px !important;
+    }
+    .dataTables_length {
+        margin-bottom: 15px;
+    }
+    .dataTables_length select {
+        min-width: 80px;
+        border-radius: 4px;
+    }
+    .buttons-page-length {
+        background-color: #4e73df !important;
+        color: white !important;
+    }
+    .buttons-collection {
+        background-color: #1cc88a !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Inicializar DataTables
+    $('#ventasTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10, 20, 50, 100, -1], [10, 20, 50, 100, "Todos"]],
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json",
+            lengthMenu: "Mostrar _MENU_ registros",
+            buttons: {
+                pageLength: {
+                    _: "Mostrar %d filas",
+                    '-1': "Mostrar Todo"
+                }
+            }
+        },
+        order: [[0, 'desc']],
+        dom: "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+             "<'row'<'col-sm-12'tr>>" +
+             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        buttons: [
+            {
+                extend: 'pageLength',
+                className: 'btn-sm buttons-page-length'
+            },
+            {
+                extend: 'collection',
+                className: 'btn-sm buttons-collection',
+                text: '<i class="fas fa-file-export"></i> Exportar',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fas fa-copy"></i> Copiar',
+                        className: 'btn btn-secondary btn-sm'
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fas fa-file-excel"></i> Excel',
+                        className: 'btn btn-success btn-sm'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fas fa-file-pdf"></i> PDF',
+                        className: 'btn btn-danger btn-sm'
+                    }
+                ]
+            }
+        ]
+    });
+
+    // Manejar cambio de período de ganancias
+    $('#periodoGanancias').change(function() {
+        $.ajax({
+            url: '{% url "obtener_ganancias" %}',
+            data: {
+                periodo: $(this).val()
+            },
+            success: function(response) {
+                $('#montoGanancias').text('S/ ' + response.ganancias.toFixed(2));
+                $('#periodoLabel').text('Ganancias del ' + response.periodo);
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudieron obtener las ganancias'
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

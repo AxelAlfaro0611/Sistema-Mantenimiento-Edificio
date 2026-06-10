@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Mantenimientos preventivos</h6>
+        <div>
+            <a href="{% url 'cronograma-preventivos' %}" class="btn btn-info btn-sm mr-1"><i class="fas fa-calendar"></i> Cronograma</a>
+            <a href="{% url 'preventivo-create' %}" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Registrar</a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% include 'core/partials/filtros_listado.html' %}
+        <div class="table-responsive mt-3">
+            <table id="tabla-datos" class="table table-bordered table-hover">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Categoría</th>
+                        <th>Fecha programada</th>
+                        <th>Fecha ejecutada</th>
+                        <th>Estado</th>
+                        <th>Costo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in preventivos %}
+                    <tr>
+                        <td>{{ p.equipo.nombre }}</td>
+                        <td>{{ p.equipo.get_categoria_display }}</td>
+                        <td data-order="{{ p.fecha_programada|date:'Y-m-d' }}">{{ p.fecha_programada|date:"d/m/Y" }}</td>
+                        <td data-order="{% if p.fecha_ejecutada %}{{ p.fecha_ejecutada|date:'Y-m-d' }}{% endif %}">{{ p.fecha_ejecutada|date:"d/m/Y"|default:"—" }}</td>
+                        <td>
+                            <span class="badge badge-{% if p.estado == 'ejecutado' %}success{% elif p.estado == 'vencido' %}danger{% else %}warning{% endif %}">
+                                {{ p.get_estado_display }}
+                            </span>
+                        </td>
+                        <td>S/ {{ p.costo|floatformat:2 }}</td>
+                        <td>
+                            {% if p.estado != 'ejecutado' %}
+                            <a href="{% url 'preventivo-ejecutar' p.id %}" class="btn btn-success btn-sm" title="Marcar ejecutado"><i class="fas fa-check"></i></a>
+                            {% endif %}
+                            <a href="{% url 'preventivo-edit' p.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script>$('#tabla-datos').DataTable({ language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay registros con los filtros aplicados." }, order: [[2, 'asc']] });</script>
+{% endblock %}

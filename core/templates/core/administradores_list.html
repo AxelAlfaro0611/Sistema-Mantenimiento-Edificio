@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Listado de administradores</h6>
+    <a href="{% url 'registrar_administrador' %}" class="btn btn-success btn-sm">
+      <i class="fas fa-plus"></i> Registrar
+    </a>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="adminTable" class="table table-bordered table-hover">
+        <thead class="bg-primary text-white">
+          <tr>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for admin in administradores %}
+          <tr>
+            <td>
+              {{ admin.username }}
+              {% if admin.id == request.user.id %}
+              <span class="badge badge-info ml-1">Usted</span>
+              {% endif %}
+            </td>
+            <td>{{ admin.get_full_name|default:"—" }}</td>
+            <td>{{ admin.email|default:"—" }}</td>
+            <td class="text-nowrap">
+              <a href="{% url 'editar_administrador' admin.id %}" class="btn btn-sm btn-warning" title="Editar usuario y contraseña">
+                <i class="fas fa-edit"></i>
+              </a>
+              {% if admin.id != request.user.id and admin.username != 'admin' %}
+              <a href="{% url 'eliminar_administrador' admin.id %}" class="btn btn-sm btn-danger btn-eliminar" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function () {
+  $('#adminTable').DataTable({
+    language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay administradores registrados." },
+    order: [[0, 'asc']],
+    columnDefs: [{ orderable: false, targets: 3 }],
+  });
+
+  $('.btn-eliminar').click(function (e) {
+    e.preventDefault();
+    const url = $(this).attr('href');
+    Swal.fire({
+      title: '¿Eliminar administrador?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) window.location.href = url;
+    });
+  });
+});
+</script>
+{% endblock %}

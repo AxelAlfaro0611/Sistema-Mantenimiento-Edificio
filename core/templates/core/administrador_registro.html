@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="m-0">Registrar administrador</h5>
+    <a href="{% url 'listar_administradores' %}" class="btn btn-light btn-sm">Ver listado</a>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row">
+        {% for field in form %}
+        <div class="col-md-6 form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field|add_class:"form-control" }}
+          {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+          {% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="text-right mt-3">
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-user-plus"></i> Registrar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

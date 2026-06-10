@@ -1,0 +1,135 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h1 class="h3 mb-3">{{ equipo.nombre }}</h1>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card shadow mb-3">
+            <div class="card-header bg-primary text-white"><h6 class="m-0">Información del equipo</h6></div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6"><strong>Categoría:</strong> {{ equipo.get_categoria_display }}</div>
+                    <div class="col-md-6"><strong>Ubicación:</strong> {{ equipo.ubicacion }}</div>
+                    <div class="col-md-6"><strong>Marca / Modelo:</strong> {{ equipo.marca }} {{ equipo.modelo }}</div>
+                    <div class="col-md-6"><strong>N° Serie:</strong> {{ equipo.numero_serie|default:"—" }}</div>
+                    <div class="col-md-6"><strong>Frecuencia preventiva:</strong> {{ equipo.get_frecuencia_preventiva_display }}</div>
+                    <div class="col-md-6"><strong>Proveedor servicio:</strong> {{ equipo.proveedor_servicio|default:"—" }}</div>
+                </div>
+                {% if equipo.observaciones %}
+                <hr><p><strong>Observaciones:</strong> {{ equipo.observaciones }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                <h6 class="m-0">Cronograma preventivo {{ anio_seleccionado }}</h6>
+                <a href="{% url 'preventivos-list' %}?equipo={{ equipo.id }}&anio={{ anio_seleccionado }}" class="btn btn-sm btn-outline-primary">Ver todas las fechas</a>
+            </div>
+            <div class="card-body py-2">
+                <form method="get" class="form-inline mb-2">
+                    <label class="mr-2 small text-muted">Ver año:</label>
+                    <select name="anio" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+                        {% for anio in anios_disponibles %}
+                        <option value="{{ anio }}" {% if anio == anio_seleccionado %}selected{% endif %}>{{ anio }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                {% if resumen_cronograma.total %}
+                <span class="badge badge-warning mr-1">{{ resumen_cronograma.pendiente }} pendiente(s)</span>
+                <span class="badge badge-success mr-1">{{ resumen_cronograma.ejecutado }} ejecutado(s)</span>
+                <span class="badge badge-danger mr-1">{{ resumen_cronograma.vencido }} vencido(s)</span>
+                <span class="text-muted small ml-2">— {{ resumen_cronograma.total }} fecha(s) en total</span>
+                {% else %}
+                <p class="mb-0 text-muted small">No hay fechas programadas para {{ anio_seleccionado }}. Use el botón de abajo para generarlas.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow border-left-success mb-3">
+            <div class="card-body">
+                <h6 class="text-success font-weight-bold">Resumen de gastos</h6>
+                <p class="text-muted small mb-2">Acumulado histórico de todo el tiempo (solo preventivos ya ejecutados cuentan en su costo).</p>
+                <p class="mb-1">Preventivos: S/ {{ equipo.total_gastos_preventivos|floatformat:2 }}</p>
+                <p class="mb-1">Correctivos: S/ {{ equipo.total_gastos_correctivos|floatformat:2 }}</p>
+                <p class="mb-1">Compras: S/ {{ equipo.total_gastos_compras|floatformat:2 }}</p>
+                <hr>
+                <p class="mb-0 font-weight-bold">Total: S/ {{ equipo.total_gastos|floatformat:2 }}</p>
+                <p class="mb-0 text-muted small">{{ equipo.cantidad_correctivos }} correctivo(s) registrado(s)</p>
+            </div>
+        </div>
+        <div class="card shadow-sm mb-3">
+            <div class="card-body py-3">
+                <h6 class="font-weight-bold text-info mb-2"><i class="fas fa-calendar-plus"></i> Cronograma</h6>
+                <p class="text-muted small mb-2">
+                    Actualiza de una vez los años {{ anios_disponibles.0 }}–{{ anios_disponibles|last }}
+                    según la frecuencia y fecha base actuales. Elimina fechas obsoletas y crea las faltantes.
+                    Los ya ejecutados se conservan.
+                </p>
+                <a href="{% url 'generar-cronograma-equipo' equipo.id %}?anio={{ anio_seleccionado }}" class="btn btn-info btn-sm btn-block mb-2">
+                    <i class="fas fa-sync"></i> Actualizar cronograma (todos los años)
+                </a>
+                {% if resumen_cronograma.total %}
+                <a href="{% url 'cronograma-preventivos' %}?anio={{ anio_seleccionado }}" class="btn btn-outline-primary btn-sm btn-block">
+                    Ver cronograma general {{ anio_seleccionado }}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{% url 'equipo-edit' equipo.id %}" class="btn btn-warning btn-block btn-sm">Editar equipo</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header py-2"><h6 class="m-0">Preventivos {{ anio_seleccionado }}</h6></div>
+            <div class="card-body p-2">
+                <table class="table table-sm mb-0">
+                    {% for p in preventivos %}
+                    <tr>
+                        <td>{{ p.fecha_programada|date:"d/m/Y" }}</td>
+                        <td><span class="badge badge-{% if p.estado == 'ejecutado' %}success{% elif p.estado == 'vencido' %}danger{% else %}warning{% endif %}">{{ p.get_estado_display }}</span></td>
+                    </tr>
+                    {% empty %}<tr><td class="text-muted">Sin registros para {{ anio_seleccionado }}</td></tr>{% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header py-2"><h6 class="m-0">Correctivos recientes</h6></div>
+            <div class="card-body p-2">
+                <table class="table table-sm mb-0">
+                    {% for c in correctivos %}
+                    <tr>
+                        <td>{{ c.fecha|date:"d/m/Y" }}</td>
+                        <td>{{ c.descripcion|truncatechars:40 }}</td>
+                        <td>S/ {{ c.costo|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}<tr><td class="text-muted">Sin registros</td></tr>{% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header py-2"><h6 class="m-0">Compras / insumos</h6></div>
+            <div class="card-body p-2">
+                <table class="table table-sm mb-0">
+                    {% for c in compras %}
+                    <tr>
+                        <td>{{ c.fecha_compra|date:"d/m/Y" }}</td>
+                        <td>{{ c.descripcion|truncatechars:30 }}</td>
+                        <td>S/ {{ c.costo|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}<tr><td class="text-muted">Sin registros</td></tr>{% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

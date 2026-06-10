@@ -1,0 +1,143 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard-ui' %}">
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-building"></i>
+        </div>
+        <div class="sidebar-brand-text mx-2">Mantenimiento</div>
+    </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'dashboard-ui' %}" title="Dashboard">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">Equipos</div>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEquipos"
+           aria-expanded="true" aria-controls="collapseEquipos" title="Equipos">
+            <i class="fas fa-cogs"></i>
+            <span>Equipos</span>
+        </a>
+        <div id="collapseEquipos" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'equipo-create' %}">
+                    <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i> Registrar equipo
+                </a>
+                <a class="collapse-item" href="{% url 'equipos-list' %}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> Listado de equipos
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">Mantenimientos</div>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePreventivos"
+           aria-expanded="true" aria-controls="collapsePreventivos" title="Preventivos">
+            <i class="fas fa-calendar-check"></i>
+            <span>Preventivos</span>
+        </a>
+        <div id="collapsePreventivos" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'cronograma-preventivos' %}">
+                    <i class="fas fa-calendar-alt fa-sm fa-fw mr-2 text-gray-400"></i> Cronograma anual
+                </a>
+                <a class="collapse-item" href="{% url 'preventivos-list' %}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> Listado preventivos
+                </a>
+                <a class="collapse-item" href="{% url 'preventivo-create' %}">
+                    <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i> Registrar preventivo
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCorrectivos"
+           aria-expanded="true" aria-controls="collapseCorrectivos" title="Correctivos">
+            <i class="fas fa-tools"></i>
+            <span>Correctivos</span>
+        </a>
+        <div id="collapseCorrectivos" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'correctivo-create' %}">
+                    <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i> Registrar correctivo
+                </a>
+                <a class="collapse-item" href="{% url 'correctivos-list' %}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> Listado correctivos
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCompras"
+           aria-expanded="true" aria-controls="collapseCompras" title="Compras e insumos">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Compras e insumos</span>
+        </a>
+        <div id="collapseCompras" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'compra-create' %}">
+                    <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i> Registrar compra
+                </a>
+                <a class="collapse-item" href="{% url 'compras-list' %}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> Listado de compras
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">Consultas</div>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'busqueda-central' %}" title="Búsqueda central">
+            <i class="fas fa-search"></i>
+            <span>Búsqueda central</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'reportes-equipos' %}" title="Reportes por equipo">
+            <i class="fas fa-chart-bar"></i>
+            <span>Reportes por equipo</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">Administración</div>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAdmin"
+           aria-expanded="true" aria-controls="collapseAdmin" title="Administradores">
+            <i class="fas fa-user-shield"></i>
+            <span>Administradores</span>
+        </a>
+        <div id="collapseAdmin" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="{% url 'registrar_administrador' %}">
+                    <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i> Registrar admin
+                </a>
+                <a class="collapse-item" href="{% url 'listar_administradores' %}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> Listado de admins
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+</ul>

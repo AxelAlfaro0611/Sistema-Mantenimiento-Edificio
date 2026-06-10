@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Cronograma de mantenimientos preventivos — {{ anio_seleccionado }}</h6>
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-info btn-sm">
+                <i class="fas fa-sync"></i> Generar cronograma para todos los equipos
+            </button>
+        </form>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row mb-4">
+            <div class="col-md-3">
+                <select name="anio" class="form-control">
+                    {% for anio in anios_disponibles %}
+                    <option value="{{ anio }}" {% if anio == anio_seleccionado %}selected{% endif %}>{{ anio }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary">Ver año</button></div>
+        </form>
+
+        <div class="row mb-4">
+            {% for mes, datos in resumen_mes.items %}
+            <div class="col-md-3 col-lg-2 mb-2">
+                <div class="card border-left-primary shadow-sm h-100">
+                    <div class="card-body py-2 px-3">
+                        <div class="text-xs font-weight-bold text-primary">{{ mes }}</div>
+                        <small class="text-warning d-block">Pend: {{ datos.pendiente }}</small>
+                        <small class="text-success d-block">Ejec: {{ datos.ejecutado }}</small>
+                        <small class="text-danger d-block">Venc: {{ datos.vencido }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="table-responsive">
+            <table id="tabla-datos" class="table table-bordered table-sm table-hover">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Equipo</th>
+                        <th>Categoría</th>
+                        <th>Ubicación</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in preventivos %}
+                    <tr class="{% if p.estado == 'vencido' %}table-danger{% elif p.estado == 'ejecutado' %}table-success{% endif %}">
+                        <td>{{ p.fecha_programada|date:"d/m/Y" }}</td>
+                        <td>{{ p.equipo.nombre }}</td>
+                        <td>{{ p.equipo.get_categoria_display }}</td>
+                        <td>{{ p.equipo.ubicacion }}</td>
+                        <td><span class="badge badge-{% if p.estado == 'ejecutado' %}success{% elif p.estado == 'vencido' %}danger{% else %}warning{% endif %}">{{ p.get_estado_display }}</span></td>
+                        <td>
+                            {% if p.estado != 'ejecutado' %}
+                            <a href="{% url 'preventivo-ejecutar' p.id %}" class="btn btn-success btn-sm"><i class="fas fa-check"></i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script>$('#tabla-datos').DataTable({ language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay fechas programadas para {{ anio_seleccionado }}. Registre equipos y genere el cronograma." }, pageLength: 25, order: [[0, 'asc']] });</script>
+{% endblock %}

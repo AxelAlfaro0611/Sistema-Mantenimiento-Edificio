@@ -1,0 +1,189 @@
+{% extends 'core/base.html' %}
+
+
+
+{% block content %}
+
+<div class="card shadow mb-4">
+
+    <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap">
+
+        <h6 class="m-0 font-weight-bold text-primary">Reporte de gastos y correctivos por equipo — {{ anio_seleccionado }}</h6>
+
+        <div class="mt-2 mt-md-0">
+
+            <a href="{% url 'reportes-equipos-excel' %}?anio={{ anio_seleccionado }}"
+
+               class="btn btn-success btn-sm mr-1" title="Descargar Excel">
+
+                <i class="fas fa-file-excel"></i> Excel
+
+            </a>
+
+            <a href="{% url 'reportes-equipos-pdf' %}?anio={{ anio_seleccionado }}"
+
+               class="btn btn-danger btn-sm" title="Descargar PDF">
+
+                <i class="fas fa-file-pdf"></i> PDF
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="get" class="row mb-4 align-items-end">
+
+            <div class="col-md-3">
+
+                <label class="small text-muted mb-1">Año</label>
+
+                <select name="anio" class="form-control">
+
+                    {% for anio in anios_disponibles %}
+
+                    <option value="{{ anio }}" {% if anio == anio_seleccionado %}selected{% endif %}>{{ anio }}</option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button class="btn btn-primary btn-block">Filtrar</button>
+
+            </div>
+
+            <div class="col-md-7 text-md-right text-muted small">
+
+                Las descargas Excel y PDF usan el año seleccionado.
+
+            </div>
+
+        </form>
+
+
+
+        <p class="text-muted">Use este reporte para identificar equipos con más fallas o gastos y evaluar si conviene reparar o reemplazar.</p>
+
+
+
+        <div class="table-responsive">
+
+            <table id="tabla-datos" class="table table-bordered table-hover">
+
+                <thead class="bg-primary text-white">
+
+                    <tr>
+
+                        <th>Equipo</th>
+
+                        <th>Categoría</th>
+
+                        <th>Correctivos</th>
+
+                        <th>Gasto correctivos</th>
+
+                        <th>Gasto preventivos</th>
+
+                        <th>Gasto compras</th>
+
+                        <th>Total gastos</th>
+
+                        <th>Detalle</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for d in datos %}
+
+                    <tr class="{% if d.correctivos >= 5 or d.total_gastos >= 5000 %}table-warning{% endif %}">
+
+                        <td>{{ d.equipo.nombre }}</td>
+
+                        <td>{{ d.equipo.get_categoria_display }}</td>
+
+                        <td><span class="badge badge-{% if d.correctivos >= 5 %}danger{% elif d.correctivos >= 3 %}warning{% else %}secondary{% endif %}">{{ d.correctivos }}</span></td>
+
+                        <td>S/ {{ d.gasto_correctivos|floatformat:2 }}</td>
+
+                        <td>S/ {{ d.gasto_preventivos|floatformat:2 }}</td>
+
+                        <td>S/ {{ d.gasto_compras|floatformat:2 }}</td>
+
+                        <td class="font-weight-bold">S/ {{ d.total_gastos|floatformat:2 }}</td>
+
+                        <td><a href="{% url 'equipo-detalle' d.equipo.id %}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a></td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    {% endfor %}
+
+                </tbody>
+
+                {% if datos %}
+
+                <tfoot class="bg-light font-weight-bold">
+
+                    <tr>
+
+                        <td colspan="2">Total general</td>
+
+                        <td class="text-center">{{ totales.correctivos }}</td>
+
+                        <td>S/ {{ totales.gasto_correctivos|floatformat:2 }}</td>
+
+                        <td>S/ {{ totales.gasto_preventivos|floatformat:2 }}</td>
+
+                        <td>S/ {{ totales.gasto_compras|floatformat:2 }}</td>
+
+                        <td>S/ {{ totales.total_gastos|floatformat:2 }}</td>
+
+                        <td></td>
+
+                    </tr>
+
+                </tfoot>
+
+                {% endif %}
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+<script>$('#tabla-datos').DataTable({ language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay equipos activos." }, order: [[6, 'desc']] });</script>
+
+{% endblock %}
+
+

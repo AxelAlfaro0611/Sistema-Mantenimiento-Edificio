@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-success text-white">
+        <h5 class="m-0">Marcar mantenimiento como ejecutado</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Equipo:</strong> {{ preventivo.equipo.nombre }}</p>
+        <p><strong>Fecha programada:</strong> {{ preventivo.fecha_programada|date:"d/m/Y" }}</p>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">Confirmar ejecución</button>
+            <a href="{% url 'preventivos-list' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

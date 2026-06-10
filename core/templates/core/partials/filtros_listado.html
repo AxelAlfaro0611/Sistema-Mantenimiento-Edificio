@@ -1,0 +1,39 @@
+<form method="get" class="row">
+    <div class="col-md-2">
+        <select name="anio" class="form-control">
+            <option value="">Año</option>
+            {% for anio in anios_disponibles %}
+            <option value="{{ anio }}" {% if anio|stringformat:"s" == anio_seleccionado|stringformat:"s" %}selected{% endif %}>{{ anio }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="mes" class="form-control">
+            <option value="">Mes</option>
+            {% for num, nombre in meses_disponibles %}
+            <option value="{{ num }}" {% if mes_seleccionado|stringformat:"s" == num|stringformat:"s" %}selected{% endif %}>{{ nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="equipo" class="form-control">
+            <option value="">Todos los equipos</option>
+            {% for eq in equipos_filtro %}
+            <option value="{{ eq.id }}" {% if equipo_seleccionado|stringformat:"s" == eq.id|stringformat:"s" %}selected{% endif %}>{{ eq.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% if estado_seleccionado is not None %}
+    <div class="col-md-2">
+        <select name="estado" class="form-control">
+            <option value="">Estado</option>
+            <option value="pendiente" {% if estado_seleccionado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="ejecutado" {% if estado_seleccionado == 'ejecutado' %}selected{% endif %}>Ejecutado</option>
+            <option value="vencido" {% if estado_seleccionado == 'vencido' %}selected{% endif %}>Vencido</option>
+        </select>
+    </div>
+    {% endif %}
+    <div class="col-md-2">
+        <button class="btn btn-primary btn-block">Filtrar</button>
+    </div>
+</form>

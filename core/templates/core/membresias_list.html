@@ -1,0 +1,90 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Listado de Membresías</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="membresiasTable" class="table table-bordered table-hover">
+          <thead class="bg-primary text-white">
+            <tr>
+              <th>Cliente</th>
+              <th>Plan</th>
+              <th>Tipo</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th>Pagado</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in membresias %}
+            <tr>
+              <td>{{ m.cliente.nombres }} {{ m.cliente.apellidos }}</td>
+              <td>{{ m.plan }}</td>
+              <td>{{ m.tipo }}</td>
+              <td>{{ m.fecha_inicio }}</td>
+              <td>{{ m.fecha_fin }}</td>
+              <td>S/ {{ m.monto_pagado }}</td>
+              <td>S/ {{ m.monto_total }}</td>
+              <td>
+                {% if m.esta_pagada %}
+                  <span class="badge bg-success text-white">Pagada</span>
+                {% else %}
+                  <span class="badge bg-danger text-white">Con Deuda</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'detalle_membresia' m.id %}" class="btn btn-sm btn-info" title="Ver / Editar">
+                  <i class="fas fa-eye"></i>
+                </a>
+
+                {% if not m.esta_pagada %}
+                <a href="{% url 'completar_pago_por_membresia' m.id %}" class="btn btn-sm btn-warning" title="Completar Pago">
+                  <i class="fas fa-money-bill-wave"></i>
+                </a>
+                {% endif %}
+                <a href="{% url 'ver_pagos_membresia' m.id %}" class="btn btn-sm btn-info" title="Ver Pagos">
+                  <i class="fas fa-wallet"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery debe cargarse primero -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables CSS y JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Inicialización de la tabla -->
+<script>
+  $(document).ready(function () {
+    $('#membresiasTable').DataTable({
+      responsive: true,
+      ordering: true,
+      pageLength: 10,
+      lengthMenu: [[10, 20, 30, 50], [10, 20, 30, 50]],
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h4>Pagos de {{ membresia.cliente.nombres }} {{ membresia.cliente.apellidos }}</h4>
+  <p><strong>Plan:</strong> {{ membresia.plan }} | <strong>Total:</strong> S/ {{ membresia.monto_total }}</p>
+
+  <table class="table table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Monto</th>
+        <th>Fecha</th>
+        <th>Observación</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pago in pagos %}
+      <tr>
+        <td>S/ {{ pago.monto }}</td>
+        <td>{{ pago.fecha|date:"Y-m-d H:i" }}</td>
+        <td>{{ pago.observacion|default:"—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{% url 'ver_membresias' %}" class="btn btn-secondary">← Volver</a>
+</div>
+{% endblock %}

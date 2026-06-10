@@ -1,0 +1,137 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Registrar Membresía</h5>
+          <small class="text-light">Cliente: {{ cliente.nombres }} {{ cliente.apellidos }}</small>
+        </div>
+        <div class="card-body">
+
+          {% if cliente.tiene_membresia %}
+            <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                  icon: 'warning',
+                  title: '¡Advertencia!',
+                  text: 'Este cliente ya tiene una membresía registrada.',
+                  confirmButtonText: 'Aceptar'
+                });
+              });
+            </script>
+          {% endif %}
+
+          <!-- Mostrar errores -->
+          {% if form.errors %}
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                {% for field in form %}
+                  {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                  {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <form method="post" action="">
+            {% csrf_token %}
+
+            <!-- Fecha inicio y fin -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.fecha_inicio.label_tag }}
+                {{ form.fecha_inicio|add_class:"form-control" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ form.fecha_fin.label_tag }}
+                {{ form.fecha_fin|add_class:"form-control" }}
+              </div>
+            </div>
+
+            <!-- Plan, tipo, tipo_pago -->
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                {{ form.plan.label_tag }}
+                {{ form.plan|add_class:"form-control" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.tipo.label_tag }}
+                {{ form.tipo|add_class:"form-control" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.tipo_pago.label_tag }}
+                {{ form.tipo_pago|add_class:"form-control" }}
+              </div>
+            </div>
+
+            <!-- Montos -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.monto_total.label_tag }}
+                {{ form.monto_total|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ form.primer_pago.label_tag }}
+                {{ form.primer_pago|add_class:"form-control shadow-sm" }}
+              </div>
+            </div>
+
+            <!-- Pagos a plazos -->
+            <h5 class="text-primary mt-3">Pagos a plazos</h5>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                {{ form.monto_1.label_tag }} {{ form.monto_1|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.monto_2.label_tag }} {{ form.monto_2|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.monto_3.label_tag }} {{ form.monto_3|add_class:"form-control shadow-sm" }}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                {{ form.fecha_pago_1.label_tag }} {{ form.fecha_pago_1|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.fecha_pago_2.label_tag }} {{ form.fecha_pago_2|add_class:"form-control shadow-sm" }}
+              </div>
+              <div class="col-md-4 mb-3">
+                {{ form.fecha_pago_3.label_tag }} {{ form.fecha_pago_3|add_class:"form-control shadow-sm" }}
+              </div>
+            </div>
+
+            <!-- Ficha entrenamiento -->
+            <div class="form-check mb-3">
+              {{ form.ficha_entrenamiento|add_class:"form-check-input" }}
+              {{ form.ficha_entrenamiento.label_tag }}
+            </div>
+
+            <!-- Botón guardar -->
+            <div class="text-end">
+              <button type="submit" class="btn btn-success px-4">
+                Guardar Membresía
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

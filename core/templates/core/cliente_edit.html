@@ -1,0 +1,142 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block content %}
+<!-- Cargar librerías JS necesarias -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container mt-4">
+  <!-- Tarjeta de edición de cliente -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Editar Cliente</h6>
+    </div>
+    <div class="card-body">
+      <form id="editarClienteForm" method="POST">
+        {% csrf_token %}
+        
+        <!-- Datos del cliente (Nombres y Apellidos) -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="nombres">Nombres</label>
+            {{ form.nombres|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="apellidos">Apellidos</label>
+            {{ form.apellidos|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Fecha de nacimiento y DNI -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+            {{ form.fecha_nacimiento|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="dni">DNI</label>
+            {{ form.dni|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Teléfono y Email -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="telefono">Teléfono / WhatsApp</label>
+            {{ form.telefono|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="email">Email</label>
+            {{ form.email|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Dirección y Distrito -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="direccion">Dirección</label>
+            {{ form.direccion|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="distrito">Distrito</label>
+            {{ form.distrito|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Fuente y Objetivo -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="fuente">Fuente</label>
+            {{ form.fuente|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="objetivo">Objetivo</label>
+            {{ form.objetivo|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Peso y Estatura -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="peso">Peso (kg)</label>
+            {{ form.peso|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="estatura">Estatura (cm)</label>
+            {{ form.estatura|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="mb-3">
+          <label for="observaciones">Observaciones</label>
+          {{ form.observaciones|add_class:"form-control" }}
+        </div>
+
+        <!-- Mostrar QR generado -->
+        {% if cliente.qr_code %}
+          <div class="text-center mt-4">
+            <h6>QR para marcar asistencia</h6>
+            <img src="{{ cliente.qr_code.url }}" alt="QR del cliente" width="180">
+          </div>
+        {% else %}
+          <div class="alert alert-warning mt-3 text-center">
+            QR no generado. Edita y guarda el cliente para generarlo automáticamente.
+          </div>
+        {% endif %}
+
+        <!-- Botón para guardar -->
+        <button type="submit" class="btn btn-success">Guardar</button>
+      </form>
+      <!-- Botón para generar el carnet PDF -->
+{% comment %}       <div class="text-center mt-4">
+        <a href="{% url 'generar_carnet' cliente.id %}" class="btn btn-primary">
+          <i class="fas fa-id-card"></i> Generar Carnet PDF
+        </a>
+      </div> {% endcomment %}
+    </div>
+  </div>
+</div>
+
+<!-- Confirmación antes de guardar -->
+<script>
+  document.getElementById('editarClienteForm').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevenir submit normal
+
+    Swal.fire({
+      title: '¿Guardar cambios?',
+      text: "¿Deseas actualizar la información del cliente?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        e.target.submit(); // Enviar el formulario después de la confirmación
+      }
+    });
+  });
+</script>
+{% endblock %}

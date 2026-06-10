@@ -1,0 +1,183 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Editar Membresía</h5>
+      <small>Cliente: {{ membresia.cliente.nombres }} {{ membresia.cliente.apellidos }}</small>
+    </div>
+    <div class="card-body">
+      <form method="post" id="membresiaForm">
+        {% csrf_token %}
+
+        <!-- Errores del formulario -->
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <!-- Fecha inicio y fin -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.fecha_inicio.label_tag }}
+            {{ form.fecha_inicio|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.fecha_fin.label_tag }}
+            {{ form.fecha_fin|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Plan, tipo, tipo_pago -->
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            {{ form.plan.label_tag }}
+            {{ form.plan|add_class:"form-control" }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.tipo.label_tag }}
+            {{ form.tipo|add_class:"form-control" }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.tipo_pago.label_tag }}
+            {{ form.tipo_pago|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Montos -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.monto_total.label_tag }}
+            {{ form.monto_total|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.monto_pagado.label_tag }}
+            {{ form.monto_pagado|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Pagos a plazos -->
+        <h5 class="text-primary mt-3">Pagos a plazos</h5>
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            {{ form.monto_1.label_tag }} {{ form.monto_1|add_class:"form-control" }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.monto_2.label_tag }} {{ form.monto_2|add_class:"form-control" }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.monto_3.label_tag }} {{ form.monto_3|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            {{ form.fecha_pago_1.label_tag }} {{ form.fecha_pago_1|add_class:"form-control" }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.fecha_pago_2.label_tag }} {{ form.fecha_pago_2|add_class:"form-control" }}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.fecha_pago_3.label_tag }} {{ form.fecha_pago_3|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <!-- Ficha entrenamiento -->
+        <div class="form-check mb-3">
+          {{ form.ficha_entrenamiento|add_class:"form-check-input" }}
+          {{ form.ficha_entrenamiento.label_tag }}
+        </div>
+
+        <!-- Botones -->
+            <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'ver_membresias' %}" class="btn btn-secondary">← Volver</a>
+            <div>
+                <button type="submit" class="btn btn-success me-2">Guardar Cambios</button>
+                
+                <button type="button" class="btn btn-danger" id="btnEliminar">Eliminar</button>
+            </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btnEliminar = document.getElementById("btnEliminar");
+    if (btnEliminar) {
+      btnEliminar.addEventListener("click", function () {
+        Swal.fire({
+          title: "¿Estás seguro?",
+          text: "Esta acción eliminará la membresía permanentemente.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch("{% url 'eliminar_membresia' membresia.id %}", {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  title: "Eliminado",
+                  text: data.message,
+                  icon: "success",
+                  confirmButtonText: "Aceptar"
+                }).then(() => {
+                  window.location.href = "{% url 'ver_membresias' %}";
+                });
+              } else {
+                Swal.fire("Error", data.message, "error");
+              }
+            })
+            .catch(() => {
+              Swal.fire("Error", "Hubo un problema al eliminar.", "error");
+            });
+          }
+        });
+      });
+    }
+  });
+</script>
+
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    {% for message in messages %}
+      Swal.fire({
+        icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+        title: "{{ message|escapejs }}",
+        confirmButtonText: 'Aceptar'
+      });
+    {% endfor %}
+  });
+</script>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,136 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Listado de Clientes</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="clientesTable" class="table table-bordered table-hover">
+          <thead class="bg-primary text-white">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>DNI</th>
+              <th>Teléfono</th>
+              <th>Estado</th>
+              <th>Días Restantes</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cliente in clientes %}
+            <tr>
+              <td>{{ cliente.id }}</td>
+              <td>{{ cliente.nombres }} {{ cliente.apellidos }}</td>
+              <td>{{ cliente.dni }}</td>
+              <td>{{ cliente.telefono }}</td>
+              <td>
+                <span class="badge fs-2
+                  {% if cliente.estado == 'Con Membresía' %}
+                    bg-success text-white
+                  {% elif cliente.estado == 'Membresía con deuda' %}
+                    bg-warning text-dark
+                  {% elif cliente.estado == 'Registrado' %}
+                    bg-secondary text-white
+                  {% else %}
+                    bg-danger text-white
+                  {% endif %} fs-6">
+                  {{ cliente.estado }}
+              </span>
+              </td>
+              <td>
+                <span class="badge 
+                  {% if cliente.dias_restantes is None %} bg-secondary
+                  {% elif cliente.dias_restantes == 0 %} bg-danger 
+                  {% elif cliente.dias_restantes <= 10 %} text-white bg-danger
+                  {% elif cliente.dias_restantes <= 30 %} bg-warning text-dark
+                  {% else %} bg-success text-white
+                  {% endif %} fs-6">
+                  {{ cliente.dias_restantes|default:"-" }}
+                </span>
+              </td>
+              <td>
+                <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-sm btn-warning" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                {% if cliente.estado == 'Registrado' %}
+                <a href="{% url 'registrar_membresia' cliente.id %}" class="btn btn-sm btn-success" title="Registrar Membresía">
+                    <i class="fas fa-id-card"></i>
+                </a>
+                {% endif %}
+                {% if cliente.membresia_activa %}
+                <a href="{% url 'generar_carnet' cliente.id %}" class="btn btn-sm btn-primary" title="Generar Carnet">
+                    <i class="fas fa-id-card"></i>
+                </a>
+                {% endif %}
+                <a href="{% url 'ver_asistencia' cliente.id %}" class="btn btn-sm btn-info" title="Asistencias">
+                  <i class="fas fa-calendar-check"></i>
+                </a>
+                {% if cliente.telefono %}
+                <a href="https://wa.me/{{ cliente.telefono }}?text=¡Hola%20{{ cliente.nombres }}" target="_blank" class="btn btn-sm btn-success" title="WhatsApp">
+                  <i class="fab fa-whatsapp"></i>
+                </a>
+                {% endif %}
+                {% if cliente.estado == 'Membresía con deuda' %}
+                  <a href="{% url 'completar_pago_membresia' cliente.id %}" class="btn btn-sm btn-danger" title="Completar Pago">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </a>
+                {% endif %} 
+                {# Mostrar el botón solo si la membresía está activa #}
+
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery debe cargarse primero -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables CSS y JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- Inicialización de la tabla -->
+<script>
+  $(document).ready(function () {
+    $('#clientesTable').DataTable({
+      responsive: true,
+      ordering: true,
+      pageLength: 10,
+      lengthMenu: [[10, 30, 50, 100], [10, 30, 50, 100]],
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+      }
+    });
+  });
+</script>
+
+<!-- 🔔 Mensajes con SweetAlert2 -->
+{% if messages %}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      {% for message in messages %}
+        Swal.fire({
+          icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+          title: "{{ message|escapejs }}",
+          confirmButtonText: 'Aceptar'
+        });
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+{% endblock %}

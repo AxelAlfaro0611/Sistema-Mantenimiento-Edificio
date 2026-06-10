@@ -1,0 +1,187 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h1 class="h3 mb-4 text-gray-800">Dashboard de Mantenimiento</h1>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Equipos activos</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_equipos }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Preventivos pendientes (mes)</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ preventivos_pendientes }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Preventivos vencidos</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ preventivos_vencidos }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Correctivos del mes</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ correctivos_mes }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Gastos del mes</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">S/ {{ gastos_mes|floatformat:2 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-secondary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Compras del mes</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ compras_mes }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-2">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white py-2">
+                <h6 class="m-0">Próximos preventivos (30 días)</h6>
+            </div>
+            <div class="card-body p-2">
+                <table class="table table-sm table-hover mb-0">
+                    <thead><tr><th>Equipo</th><th>Fecha</th></tr></thead>
+                    <tbody>
+                        {% for p in proximos_preventivos %}
+                        <tr>
+                            <td>{{ p.equipo.nombre }}</td>
+                            <td>{{ p.fecha_programada|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center text-muted">Sin registros</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white py-2">
+                <h6 class="m-0">Preventivos vencidos</h6>
+            </div>
+            <div class="card-body p-2">
+                <table class="table table-sm table-hover mb-0">
+                    <thead><tr><th>Equipo</th><th>Fecha prog.</th></tr></thead>
+                    <tbody>
+                        {% for p in preventivos_vencidos_tabla %}
+                        <tr>
+                            <td>{{ p.equipo.nombre }}</td>
+                            <td>{{ p.fecha_programada|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center text-muted">Sin vencidos</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white py-2">
+                <h6 class="m-0">Equipos con más correctivos</h6>
+            </div>
+            <div class="card-body p-2">
+                <table class="table table-sm table-hover mb-0">
+                    <thead><tr><th>Equipo</th><th>Correctivos</th></tr></thead>
+                    <tbody>
+                        {% for eq in equipos_mas_correctivos %}
+                        <tr>
+                            <td><a href="{% url 'equipo-detalle' eq.id %}">{{ eq.nombre }}</a></td>
+                            <td>{{ eq.num_correctivos }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center text-muted">Sin datos</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-4 px-0">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" class="row align-items-end">
+                <div class="col-md-3">
+                    <label>Año</label>
+                    <select name="anio" class="form-control">
+                        {% for anio in anios_disponibles %}
+                        <option value="{{ anio }}" {% if anio == anio_seleccionado %}selected{% endif %}>{{ anio }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h5 class="text-center">Gastos de mantenimiento por mes ({{ anio_seleccionado }})</h5>
+            <canvas id="graficoGastos" height="100"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const labels = JSON.parse('{{ etiquetas_gastos_json|escapejs }}');
+    const data = JSON.parse('{{ datos_gastos_json|escapejs }}');
+    const ctx = document.getElementById('graficoGastos').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'S/ Gastos',
+          data: data,
+          backgroundColor: 'rgba(78, 115, 223, 0.6)',
+          borderColor: 'rgba(78, 115, 223, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  });
+</script>
+{% endblock %}

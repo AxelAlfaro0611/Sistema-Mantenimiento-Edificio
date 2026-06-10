@@ -1,0 +1,107 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load form_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="text-primary mb-0">Listado de Productos</h3>
+                <a href="{% url 'agregar_producto' %}" class="btn btn-success shadow-sm">
+                    <i class="fas fa-plus me-1"></i> Agregar Producto
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table id="tabla-productos" class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="bg-primary text-white text-center">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Separados</th>
+                            <th>Disponibles</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        {% for producto in productos %}
+                        <tr>
+                            <td class="fw-semibold">{{ producto.nombre }}</td>
+                            <td>{{ producto.descripcion }}</td>
+                            <td>${{ producto.precio }}</td>
+                            <td>{{ producto.unidades_separadas }}</td>
+                            <td>{{ producto.stock_disponible }}</td>
+                            <td>
+                                <span class="badge bg-{{ producto.estado_stock.1 }}">
+                                    {{ producto.estado_stock.0 }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'editar_producto' producto.id %}" class="btn btn-outline-warning btn-sm me-1" title="Editar">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="{% url 'eliminar_producto' producto.id %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables Bootstrap 4 -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4@5/bootstrap-4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<!-- DataTables Bootstrap 4 -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#tabla-productos').DataTable({
+      responsive: true,
+      ordering: true,
+      pageLength: 10,
+      lengthMenu: [[10, 20, 30, 50], [10, 20, 30, 50]],
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      columnDefs: [
+        { targets: 'no-sort', orderable: false }
+      ]
+    });
+
+    {% if messages %}
+      {% for message in messages %}
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 4000,
+          timerProgressBar: true,
+          icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+          title: "{{ message|escapejs }}"
+        });
+      {% endfor %}
+    {% endif %}
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Asistencias de {{ cliente.nombres }} {{ cliente.apellidos }}</h3>
+
+    <!-- Calendario dinámico -->
+    <div id="calendar" class="card shadow p-3 mb-5 bg-body rounded"></div>
+</div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<!-- Script para inicializar el calendario -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+
+    // Obtenemos los eventos de Django (ya serializados como JSON)
+    const eventos = JSON.parse(document.getElementById('asistencias-data').textContent);
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'es',
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
+      events: eventos,
+      noEventsContent: 'No hay asistencias registradas.'
+    });
+
+    calendar.render();
+  });
+</script>
+
+<!-- Insertamos los datos serializados como JSON seguro -->
+<script id="asistencias-data" type="application/json">
+    {{ asistencias_json|safe }}
+</script>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <h4>Pagos recientes</h4>
+
+  <div class="table-responsive">
+    <table id="pagosTable" class="table table-bordered table-hover">
+      <thead class="bg-primary text-white">
+        <tr>
+          <th>Cliente</th>
+          <th>Plan</th>
+          <th>Monto</th>
+          <th>Fecha</th>
+          <th>Registrado por</th>
+          <th>Observación</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pago in pagos %}
+        <tr>
+          <td>{{ pago.membresia.cliente.nombres }} {{ pago.membresia.cliente.apellidos }}</td>
+          <td>{{ pago.membresia.plan }}</td>
+          <td>S/ {{ pago.monto }}</td>
+          <td>{{ pago.fecha|date:"Y-m-d H:i" }}</td>
+          <td>
+            {% if pago.registrado_por %}
+              {{ pago.registrado_por.get_full_name|default:pago.registrado_por.username }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td>{{ pago.observacion|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#pagosTable').DataTable({
+      pageLength: 10,
+      lengthMenu: [[10, 20, 30, 50], [10, 20, 30, 50]],
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+      }
+    });
+  });
+</script>
+{% if messages %}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      {% for message in messages %}
+        Swal.fire({
+          icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+          title: "{{ message|escapejs }}",
+          confirmButtonText: 'Aceptar'
+        });
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+{% endblock %}
+

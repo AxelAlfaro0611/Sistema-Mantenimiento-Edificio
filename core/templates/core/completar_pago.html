@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h5 class="m-0">Completar Pago de Membresía</h5>
+    </div>
+    <div class="card-body">
+      <h5 class="mb-3 text-dark">Cliente: <strong>{{ cliente.nombres }} {{ cliente.apellidos }}</strong></h5>
+
+      <p><strong>Monto Total:</strong> S/ {{ membresia.monto_total }}</p>
+      <p><strong>Monto Pagado:</strong> S/ {{ membresia.monto_pagado }}</p>
+      <p><strong>Deuda:</strong> 
+        <span class="badge bg-danger">
+            S/ {{ deuda_restante|floatformat:2 }}
+        </span>
+      </p>
+
+      <form method="post" class="mt-4">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="{{ form.monto.id_for_label }}" class="form-label">Monto a pagar</label>
+          {{ form.monto }}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.observacion.id_for_label }}" class="form-label">Observación</label>
+          {{ form.observacion }}
+        </div>
+
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-coins"></i> Registrar Pago
+        </button>
+        <a href="{% url 'clientes-list' %}" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Cancelar
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if messages %}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      {% for message in messages %}
+        Swal.fire({
+          icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+          title: "{{ message|escapejs }}",
+          confirmButtonText: 'Aceptar'
+        });
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+
+
+
+{% endblock %}

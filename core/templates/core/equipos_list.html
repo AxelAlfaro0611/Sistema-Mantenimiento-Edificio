@@ -1,0 +1,98 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Equipos del edificio</h6>
+        <a href="{% url 'equipo-create' %}" class="btn btn-success btn-sm">
+            <i class="fas fa-plus"></i> Registrar equipo
+        </a>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Buscar por nombre, ubicación...">
+            </div>
+            <div class="col-md-3">
+                <select name="categoria" class="form-control">
+                    <option value="">Todas las categorías</option>
+                    <option value="ascensor" {% if categoria_seleccionada == 'ascensor' %}selected{% endif %}>Ascensores</option>
+                    <option value="aire_acondicionado" {% if categoria_seleccionada == 'aire_acondicionado' %}selected{% endif %}>Aire acondicionado</option>
+                    <option value="seguridad" {% if categoria_seleccionada == 'seguridad' %}selected{% endif %}>Seguridad y control</option>
+                    <option value="incendios" {% if categoria_seleccionada == 'incendios' %}selected{% endif %}>Contra incendios</option>
+                    <option value="electrico" {% if categoria_seleccionada == 'electrico' %}selected{% endif %}>Eléctrico</option>
+                    <option value="plomeria" {% if categoria_seleccionada == 'plomeria' %}selected{% endif %}>Plomería</option>
+                    <option value="generadores" {% if categoria_seleccionada == 'generadores' %}selected{% endif %}>Generadores</option>
+                    <option value="otros" {% if categoria_seleccionada == 'otros' %}selected{% endif %}>Otros</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block">Filtrar</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table id="tabla-datos" class="table table-bordered table-hover">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Ubicación</th>
+                        <th>Frecuencia</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for equipo in equipos %}
+                    <tr>
+                        <td><a href="{% url 'equipo-detalle' equipo.id %}">{{ equipo.nombre }}</a></td>
+                        <td>{{ equipo.get_categoria_display }}</td>
+                        <td>{{ equipo.ubicacion }}</td>
+                        <td>{{ equipo.get_frecuencia_preventiva_display }}</td>
+                        <td>
+                            {% if equipo.activo %}
+                            <span class="badge badge-success">Activo</span>
+                            {% else %}
+                            <span class="badge badge-secondary">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'equipo-detalle' equipo.id %}" class="btn btn-info btn-sm" title="Ver historial"><i class="fas fa-eye"></i></a>
+                            <a href="{% url 'equipo-edit' equipo.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'equipo-delete' equipo.id %}" class="btn btn-danger btn-sm btn-eliminar"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    $('#tabla-datos').DataTable({ language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay equipos registrados." } });
+    $('.btn-eliminar').click(function(e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        Swal.fire({
+            title: '¿Eliminar equipo?',
+            text: 'Se eliminará también su historial asociado.',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'
+        }).then(r => { if (r.isConfirmed) window.location.href = url; });
+    });
+});
+</script>
+{% endblock %}

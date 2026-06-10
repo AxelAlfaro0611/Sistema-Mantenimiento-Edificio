@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Mantenimientos correctivos</h6>
+        <a href="{% url 'correctivo-create' %}" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Registrar</a>
+    </div>
+    <div class="card-body">
+        {% include 'core/partials/filtros_listado.html' %}
+        <div class="table-responsive mt-3">
+            <table id="tabla-datos" class="table table-bordered table-hover">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Equipo / Área</th>
+                        <th>Ubicación</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Costo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in correctivos %}
+                    <tr>
+                        <td>{{ c.fecha|date:"d/m/Y" }}</td>
+                        <td>{% if c.equipo %}{{ c.equipo.nombre }}{% else %}{{ c.area }}{% endif %}</td>
+                        <td>{{ c.ubicacion }}</td>
+                        <td>{{ c.descripcion|truncatechars:50 }}</td>
+                        <td><span class="badge badge-{% if c.prioridad == 'urgente' or c.prioridad == 'alta' %}danger{% elif c.prioridad == 'media' %}warning{% else %}secondary{% endif %}">{{ c.get_prioridad_display }}</span></td>
+                        <td>{{ c.get_estado_display }}</td>
+                        <td>S/ {{ c.costo|floatformat:2 }}</td>
+                        <td>
+                            <a href="{% url 'correctivo-edit' c.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'correctivo-delete' c.id %}" class="btn btn-danger btn-sm btn-eliminar"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$('#tabla-datos').DataTable({ language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", emptyTable: "No hay registros." }, order: [[0, 'desc']] });
+$('.btn-eliminar').click(function(e) {
+    e.preventDefault();
+    Swal.fire({ title: '¿Eliminar?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' })
+    .then(r => { if (r.isConfirmed) window.location.href = $(this).attr('href'); });
+});
+</script>
+{% endblock %}

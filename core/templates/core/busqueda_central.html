@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="m-0">Búsqueda centralizada</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Filtre por equipo, mes, año o tipo de registro en preventivos, correctivos y compras.</p>
+        <form method="get" class="row">
+            <div class="col-md-4 form-group">{{ form.equipo.label_tag }}{{ form.equipo|add_class:"form-control" }}</div>
+            <div class="col-md-2 form-group">{{ form.mes.label_tag }}{{ form.mes|add_class:"form-control" }}</div>
+            <div class="col-md-2 form-group">{{ form.anio.label_tag }}{{ form.anio|add_class:"form-control" }}</div>
+            <div class="col-md-2 form-group">{{ form.tipo.label_tag }}{{ form.tipo|add_class:"form-control" }}</div>
+            <div class="col-md-2 d-flex align-items-end form-group">
+                <button class="btn btn-primary btn-block"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if resultados %}
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ resultados|length }} resultado(s) encontrado(s)</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Equipo / Referencia</th>
+                        <th>Descripción</th>
+                        <th>Estado / Proveedor</th>
+                        <th>Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in resultados %}
+                    <tr>
+                        <td><span class="badge badge-{% if r.tipo == 'Preventivo' %}info{% elif r.tipo == 'Correctivo' %}warning{% else %}success{% endif %}">{{ r.tipo }}</span></td>
+                        <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                        <td>{{ r.referencia }}</td>
+                        <td>{{ r.descripcion|truncatechars:80 }}</td>
+                        <td>{{ r.estado }}</td>
+                        <td>S/ {{ r.costo|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% elif request.GET %}
+<div class="alert alert-warning">No se encontraron resultados con los filtros aplicados.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-primary text-white"><h5 class="m-0">{{ titulo }}</h5></div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if not field.field.required %} <small class="text-muted">(opcional)</small>{% endif %}</label>
+                {{ field|add_class:"form-control" }}
+                {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="{% url 'correctivos-list' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

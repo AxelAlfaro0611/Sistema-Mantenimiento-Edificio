@@ -1,0 +1,110 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load form_filters %}
+{% block content %}
+
+<!-- SweetAlert2 y jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container mt-4">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Registrar Cliente</h6>
+    </div>
+    <div class="card-body">
+      <form id="registroForm" method="POST" action="">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Nombres</label>
+            {{ form.nombres|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label>Apellidos</label>
+            {{ form.apellidos|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Fecha de Nacimiento</label>
+            {{ form.fecha_nacimiento|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label>DNI</label>
+            {{ form.dni|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Teléfono / WhatsApp</label>
+            {{ form.telefono|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label>Email</label>
+            {{ form.email|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label>Dirección</label>
+          {{ form.direccion|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label>Distrito</label>
+          {{ form.distrito|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label>Fuente</label>
+          {{ form.fuente|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label>Objetivo</label>
+          {{ form.objetivo|add_class:"form-control" }}
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Peso (kg)</label>
+            {{ form.peso|add_class:"form-control" }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label>Estatura (cm)</label>
+            {{ form.estatura|add_class:"form-control" }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label>observaciones</label>
+          {{ form.observaciones|add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-success">Guardar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('registroForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    Swal.fire({
+      title: '¿Registrar cliente?',
+      text: "¿Estás seguro de registrar este cliente?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, registrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        event.target.submit();
+      }
+    });
+  });
+</script>
+
+{% endblock %}

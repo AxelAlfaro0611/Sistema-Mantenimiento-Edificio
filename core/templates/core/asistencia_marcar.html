@@ -1,0 +1,130 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-4 text-center">Marcar Asistencia</h3>
+
+  <!-- Formulario manual -->
+  <form method="POST" class="form-inline justify-content-center mb-4">
+    {% csrf_token %}
+    <div class="form-group mb-2">
+      <label for="dni" class="sr-only">DNI</label>
+      <input type="text" name="dni" id="dni" class="form-control" placeholder="Ingrese DNI" required>
+    </div>
+    <button type="submit" class="btn btn-success mb-2 ml-2">Marcar</button>
+  </form>
+
+  <!-- Botones de cámara -->
+  <div class="text-center mb-3">
+    <button id="btnIniciarCamara" class="btn btn-primary">
+      <i class="fas fa-camera"></i> Activar cámara
+    </button>
+    <button id="btnDetenerCamara" class="btn btn-danger d-none">
+      <i class="fas fa-stop-circle"></i> Detener cámara
+    </button>
+  </div>
+
+  <!-- Escáner QR -->
+  <div id="reader" style="width: 320px; margin: auto; display: none;"></div>
+
+  <!-- Formulario oculto para enviar DNI escaneado -->
+  <form id="formDNI" method="POST" action="{% url 'marcar_asistencia' %}" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="dni" id="dniQR">
+  </form>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mt-3 text-center">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  let qrScanner;
+  let esperando = false;
+
+  const btnIniciar = document.getElementById("btnIniciarCamara");
+  const btnDetener = document.getElementById("btnDetenerCamara");
+  const reader = document.getElementById("reader");
+
+  btnIniciar.addEventListener("click", function () {
+    reader.style.display = "block";
+    btnIniciar.classList.add("d-none");
+    btnDetener.classList.remove("d-none");
+
+    qrScanner = new Html5Qrcode("reader");
+
+    qrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (dni) => {
+        if (esperando) return;
+
+        esperando = true;
+
+        // Enviar el DNI usando AJAX (fetch)
+        fetch("{% url 'marcar_asistencia' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: new URLSearchParams({ dni: dni })
+        })
+        .then(response => response.text()) // recibir HTML con el nuevo mensaje
+        .then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Asistencia registrada',
+            text: `DNI escaneado: ${dni}`,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo registrar la asistencia'
+          });
+        })
+        .finally(() => {
+          // Esperar antes de aceptar otro QR
+          setTimeout(() => {
+            esperando = false;
+          }, 3000);
+        });
+      },
+      (error) => {
+        // Puedes ignorar los errores de escaneo
+        // console.warn(error);
+      }
+    ).catch(err => {
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudo acceder a la cámara',
+        text: 'Verifica los permisos del navegador o que tengas cámara activa.'
+      });
+    });
+  });
+
+  btnDetener.addEventListener("click", function () {
+    if (qrScanner) {
+      qrScanner.stop().then(() => {
+        reader.style.display = "none";
+        btnDetener.classList.add("d-none");
+        btnIniciar.classList.remove("d-none");
+        esperando = false;
+      });
+    }
+  });
+</script>
+
+{% endblock %}

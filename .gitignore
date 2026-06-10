@@ -1,0 +1,21 @@
+# Entorno virtual
+env/
+venv/
+ENV/
+.venv/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de compilación
+*.pyc
+
+# Archivos de desarrollo de VSCode o JetBrains
+.vscode/
+.idea/
+
+# Archivos de node/npm si usas front-end
+node_modules/
+
+django.txt
