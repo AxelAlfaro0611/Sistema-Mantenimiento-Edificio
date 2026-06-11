@@ -3,6 +3,7 @@ env/
 venv/
 ENV/
 .venv/
+.venv7/
 
 # Archivos de sistema
 .DS_Store
