@@ -34,36 +34,21 @@
 
     <div class="card-body">
 
-        <form method="get" class="row mb-4 align-items-end">
-
-            <div class="col-md-3">
-
+        <form method="get" class="row filtros-inline mb-4 align-items-end">
+            <div class="col-12 col-sm-6 col-md-3 mb-2">
                 <label class="small text-muted mb-1">Año</label>
-
                 <select name="anio" class="form-control">
-
                     {% for anio in anios_disponibles %}
-
                     <option value="{{ anio }}" {% if anio == anio_seleccionado %}selected{% endif %}>{{ anio }}</option>
-
                     {% endfor %}
-
                 </select>
-
             </div>
-
-            <div class="col-md-2">
-
+            <div class="col-12 col-sm-6 col-md-2 mb-2">
                 <button class="btn btn-primary btn-block">Filtrar</button>
-
             </div>
-
-            <div class="col-md-7 text-md-right text-muted small">
-
+            <div class="col-12 col-md-7 text-md-right text-muted small mb-2">
                 Las descargas Excel y PDF usan el año seleccionado.
-
             </div>
-
         </form>
 
 

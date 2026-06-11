@@ -1,12 +1,15 @@
 {% load static %}
 
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-2" type="button" aria-label="Menú">
         <i class="fa fa-bars"></i>
     </button>
 
     <a href="{% url 'busqueda-central' %}" class="d-none d-sm-inline-block btn btn-light border small mr-auto ml-md-3 my-2 my-md-0">
         <i class="fas fa-search fa-sm"></i> Búsqueda central
+    </a>
+    <a href="{% url 'busqueda-central' %}" class="d-sm-none btn btn-link nav-link px-2 mr-auto" title="Búsqueda central" aria-label="Búsqueda central">
+        <i class="fas fa-search"></i>
     </a>
 
     <ul class="navbar-nav ml-auto">

@@ -1,27 +1,42 @@
 {% extends 'core/base.html' %}
-{% load widget_tweaks %}
 
 {% block content %}
-<div class="card shadow">
-    <div class="card-header bg-primary text-white">
+<div class="card shadow form-registro-card form-registro">
+    <div class="card-header bg-primary text-white py-2">
         <h5 class="m-0">{{ titulo }}</h5>
     </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {% for field in form %}
-            <div class="form-group">
-                <label>{{ field.label }}</label>
-                {% if field.name == 'activo' %}
-                    <div class="form-check">{{ field|add_class:"form-check-input" }} <label class="form-check-label">Activo</label></div>
-                {% else %}
-                    {{ field|add_class:"form-control" }}
-                {% endif %}
-                {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.nombre col="col-md-8" %}
+                {% include 'core/partials/form_field.html' with field=form.categoria col="col-md-4" %}
             </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <a href="{% url 'equipos-list' %}" class="btn btn-secondary">Cancelar</a>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.ubicacion col="col-12" %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.marca col="col-md-4" %}
+                {% include 'core/partials/form_field.html' with field=form.modelo col="col-md-4" %}
+                {% include 'core/partials/form_field.html' with field=form.numero_serie col="col-md-4" %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.frecuencia_preventiva col="col-md-6" %}
+                {% include 'core/partials/form_field.html' with field=form.fecha_base_programacion col="col-md-6" widget="raw" %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.proveedor_servicio col="col-md-8" optional=True %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.observaciones col="col-12" widget="raw" optional=True %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.activo col="col-12" widget="checkbox" checkbox_label="Equipo activo" %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-save"></i> Guardar</button>
+                <a href="{% url 'equipos-list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>

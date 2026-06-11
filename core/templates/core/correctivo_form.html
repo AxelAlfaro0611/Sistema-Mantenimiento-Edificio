@@ -1,21 +1,35 @@
 {% extends 'core/base.html' %}
-{% load widget_tweaks %}
 
 {% block content %}
-<div class="card shadow">
-    <div class="card-header bg-primary text-white"><h5 class="m-0">{{ titulo }}</h5></div>
+<div class="card shadow form-registro-card form-registro">
+    <div class="card-header bg-primary text-white py-2"><h5 class="m-0">{{ titulo }}</h5></div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {% for field in form %}
-            <div class="form-group">
-                <label>{{ field.label }}{% if not field.field.required %} <small class="text-muted">(opcional)</small>{% endif %}</label>
-                {{ field|add_class:"form-control" }}
-                {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.equipo col="col-md-6" optional=True %}
+                {% include 'core/partials/form_field.html' with field=form.fecha col="col-md-3" widget="raw" %}
+                {% include 'core/partials/form_field.html' with field=form.prioridad col="col-md-3" %}
             </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <a href="{% url 'correctivos-list' %}" class="btn btn-secondary">Cancelar</a>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.area col="col-md-6" %}
+                {% include 'core/partials/form_field.html' with field=form.ubicacion col="col-md-6" %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.costo col="col-md-4" %}
+                {% include 'core/partials/form_field.html' with field=form.proveedor col="col-md-4" optional=True %}
+                {% include 'core/partials/form_field.html' with field=form.estado col="col-md-4" %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.descripcion col="col-12" widget="raw" %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.observaciones col="col-12" widget="raw" optional=True %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-save"></i> Guardar</button>
+                <a href="{% url 'correctivos-list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>

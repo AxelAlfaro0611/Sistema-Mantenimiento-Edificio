@@ -1,5 +1,5 @@
-<form method="get" class="row">
-    <div class="col-md-2">
+<form method="get" class="row filtros-listado filtros-inline mb-2">
+    <div class="col-12 col-sm-6 col-md-2 mb-2">
         <select name="anio" class="form-control">
             <option value="">Año</option>
             {% for anio in anios_disponibles %}
@@ -7,7 +7,7 @@
             {% endfor %}
         </select>
     </div>
-    <div class="col-md-2">
+    <div class="col-12 col-sm-6 col-md-2 mb-2">
         <select name="mes" class="form-control">
             <option value="">Mes</option>
             {% for num, nombre in meses_disponibles %}
@@ -15,7 +15,7 @@
             {% endfor %}
         </select>
     </div>
-    <div class="col-md-3">
+    <div class="col-12 col-md-3 mb-2">
         <select name="equipo" class="form-control">
             <option value="">Todos los equipos</option>
             {% for eq in equipos_filtro %}
@@ -24,7 +24,7 @@
         </select>
     </div>
     {% if estado_seleccionado is not None %}
-    <div class="col-md-2">
+    <div class="col-12 col-sm-6 col-md-2 mb-2">
         <select name="estado" class="form-control">
             <option value="">Estado</option>
             <option value="pendiente" {% if estado_seleccionado == 'pendiente' %}selected{% endif %}>Pendiente</option>
@@ -33,7 +33,7 @@
         </select>
     </div>
     {% endif %}
-    <div class="col-md-2">
+    <div class="col-12 col-sm-6 col-md-2 mb-2">
         <button class="btn btn-primary btn-block">Filtrar</button>
     </div>
 </form>

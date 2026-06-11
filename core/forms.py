@@ -105,6 +105,8 @@ class MantenimientoCorrectivoForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'form-control'
         self.fields['equipo'].queryset = Equipo.objects.filter(activo=True)
         self.fields['equipo'].required = False
+        if not self.instance.pk:
+            self.fields['prioridad'].initial = 'baja'
 
 
 class CompraInsumoForm(forms.ModelForm):

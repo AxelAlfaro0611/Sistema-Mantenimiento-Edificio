@@ -9,11 +9,11 @@
         </a>
     </div>
     <div class="card-body">
-        <form method="get" class="row mb-3">
-            <div class="col-md-4">
+        <form method="get" class="row filtros-inline mb-3">
+            <div class="col-12 col-md-4 mb-2">
                 <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Buscar por nombre, ubicación...">
             </div>
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-md-3 mb-2">
                 <select name="categoria" class="form-control">
                     <option value="">Todas las categorías</option>
                     <option value="ascensor" {% if categoria_seleccionada == 'ascensor' %}selected{% endif %}>Ascensores</option>
@@ -26,7 +26,7 @@
                     <option value="otros" {% if categoria_seleccionada == 'otros' %}selected{% endif %}>Otros</option>
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-sm-6 col-md-2 mb-2">
                 <button class="btn btn-primary btn-block">Filtrar</button>
             </div>
         </form>

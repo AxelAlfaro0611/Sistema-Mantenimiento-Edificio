@@ -1,0 +1,18 @@
+{% load widget_tweaks %}
+<div class="col-12 {{ col|default:'col-md-12' }} form-group mb-2">
+  <label class="form-registro-label" for="{{ field.id_for_label }}">
+    {{ field.label }}{% if optional %} <span class="text-muted font-weight-normal">(opcional)</span>{% endif %}
+  </label>
+  {% if widget == 'checkbox' %}
+    <div class="form-check mt-1">
+      {{ field|add_class:"form-check-input" }}
+      <label class="form-check-label" for="{{ field.id_for_label }}">{{ checkbox_label|default:field.label }}</label>
+    </div>
+  {% elif widget == 'raw' %}
+    {{ field }}
+  {% else %}
+    {{ field|add_class:"form-control" }}
+  {% endif %}
+  {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors.0 }}</div>{% endif %}
+  {% if field.help_text and show_help %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+</div>

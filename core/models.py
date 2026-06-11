@@ -230,7 +230,7 @@ class MantenimientoCorrectivo(models.Model):
     descripcion = models.TextField()
     costo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     proveedor = models.CharField(max_length=200, blank=True)
-    prioridad = models.CharField(max_length=20, choices=PRIORIDAD_CHOICES, default='media')
+    prioridad = models.CharField(max_length=20, choices=PRIORIDAD_CHOICES, default='baja')
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='reportado')
     observaciones = models.TextField(blank=True)
     registrado_por = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)

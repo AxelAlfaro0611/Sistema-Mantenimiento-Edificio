@@ -8,12 +8,12 @@
     </div>
     <div class="card-body">
         <p class="text-muted">Filtre por equipo, mes, año o tipo de registro en preventivos, correctivos y compras.</p>
-        <form method="get" class="row">
-            <div class="col-md-4 form-group">{{ form.equipo.label_tag }}{{ form.equipo|add_class:"form-control" }}</div>
-            <div class="col-md-2 form-group">{{ form.mes.label_tag }}{{ form.mes|add_class:"form-control" }}</div>
-            <div class="col-md-2 form-group">{{ form.anio.label_tag }}{{ form.anio|add_class:"form-control" }}</div>
-            <div class="col-md-2 form-group">{{ form.tipo.label_tag }}{{ form.tipo|add_class:"form-control" }}</div>
-            <div class="col-md-2 d-flex align-items-end form-group">
+        <form method="get" class="row filtros-inline">
+            <div class="col-12 col-sm-6 col-md-4 form-group mb-2">{{ form.equipo.label_tag }}{{ form.equipo|add_class:"form-control" }}</div>
+            <div class="col-12 col-sm-6 col-md-2 form-group mb-2">{{ form.mes.label_tag }}{{ form.mes|add_class:"form-control" }}</div>
+            <div class="col-12 col-sm-6 col-md-2 form-group mb-2">{{ form.anio.label_tag }}{{ form.anio|add_class:"form-control" }}</div>
+            <div class="col-12 col-sm-6 col-md-2 form-group mb-2">{{ form.tipo.label_tag }}{{ form.tipo|add_class:"form-control" }}</div>
+            <div class="col-12 col-md-2 d-flex align-items-end form-group mb-2">
                 <button class="btn btn-primary btn-block"><i class="fas fa-search"></i> Buscar</button>
             </div>
         </form>

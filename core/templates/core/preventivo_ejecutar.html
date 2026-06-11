@@ -1,25 +1,31 @@
 {% extends 'core/base.html' %}
-{% load widget_tweaks %}
 
 {% block content %}
-<div class="card shadow">
-    <div class="card-header bg-success text-white">
+<div class="card shadow form-registro-card form-registro">
+    <div class="card-header bg-success text-white py-2">
         <h5 class="m-0">Marcar mantenimiento como ejecutado</h5>
     </div>
     <div class="card-body">
-        <p><strong>Equipo:</strong> {{ preventivo.equipo.nombre }}</p>
-        <p><strong>Fecha programada:</strong> {{ preventivo.fecha_programada|date:"d/m/Y" }}</p>
-        <hr>
+        <p class="mb-1 small"><strong>Equipo:</strong> {{ preventivo.equipo.nombre }}</p>
+        <p class="mb-2 small"><strong>Fecha programada:</strong> {{ preventivo.fecha_programada|date:"d/m/Y" }}</p>
+        <hr class="my-2">
         <form method="post">
             {% csrf_token %}
-            {% for field in form %}
-            <div class="form-group">
-                <label>{{ field.label }}</label>
-                {{ field|add_class:"form-control" }}
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.fecha_ejecutada col="col-md-4" widget="raw" %}
+                {% include 'core/partials/form_field.html' with field=form.costo col="col-md-4" %}
+                {% include 'core/partials/form_field.html' with field=form.tecnico_responsable col="col-md-4" optional=True %}
             </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-success">Confirmar ejecución</button>
-            <a href="{% url 'preventivos-list' %}" class="btn btn-secondary">Cancelar</a>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.descripcion col="col-12" widget="raw" optional=True %}
+            </div>
+            <div class="row">
+                {% include 'core/partials/form_field.html' with field=form.observaciones col="col-12" widget="raw" optional=True %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Confirmar ejecución</button>
+                <a href="{% url 'preventivos-list' %}" class="btn btn-secondary btn-sm">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>
