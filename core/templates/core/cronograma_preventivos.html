@@ -47,7 +47,7 @@
                         <th>Categoría</th>
                         <th>Ubicación</th>
                         <th>Estado</th>
-                        <th>Acción</th>
+                        <th class="col-acciones">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,9 +58,11 @@
                         <td>{{ p.equipo.get_categoria_display }}</td>
                         <td>{{ p.equipo.ubicacion }}</td>
                         <td><span class="badge badge-{% if p.estado == 'ejecutado' %}success{% elif p.estado == 'vencido' %}danger{% else %}warning{% endif %}">{{ p.get_estado_display }}</span></td>
-                        <td>
+                        <td class="td-acciones">
                             {% if p.estado != 'ejecutado' %}
-                            <a href="{% url 'preventivo-ejecutar' p.id %}" class="btn btn-success btn-sm"><i class="fas fa-check"></i></a>
+                            <div class="tabla-acciones">
+                                <a href="{% url 'preventivo-ejecutar' p.id %}" class="btn btn-success btn-sm" title="Marcar ejecutado"><i class="fas fa-check"></i></a>
+                            </div>
                             {% endif %}
                         </td>
                     </tr>

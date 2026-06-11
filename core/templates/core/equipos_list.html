@@ -40,7 +40,7 @@
                         <th>Ubicación</th>
                         <th>Frecuencia</th>
                         <th>Estado</th>
-                        <th>Acciones</th>
+                        <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,10 +57,12 @@
                             <span class="badge badge-secondary">Inactivo</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <a href="{% url 'equipo-detalle' equipo.id %}" class="btn btn-info btn-sm" title="Ver historial"><i class="fas fa-eye"></i></a>
-                            <a href="{% url 'equipo-edit' equipo.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                            <a href="{% url 'equipo-delete' equipo.id %}" class="btn btn-danger btn-sm btn-eliminar"><i class="fas fa-trash"></i></a>
+                        <td class="td-acciones">
+                            <div class="tabla-acciones">
+                                <a href="{% url 'equipo-detalle' equipo.id %}" class="btn btn-info btn-sm" title="Ver historial"><i class="fas fa-eye"></i></a>
+                                <a href="{% url 'equipo-edit' equipo.id %}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'equipo-delete' equipo.id %}" class="btn btn-danger btn-sm btn-eliminar" title="Eliminar"><i class="fas fa-trash"></i></a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}

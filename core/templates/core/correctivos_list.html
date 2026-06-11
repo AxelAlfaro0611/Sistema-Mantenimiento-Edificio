@@ -19,7 +19,7 @@
                         <th>Prioridad</th>
                         <th>Estado</th>
                         <th>Costo</th>
-                        <th>Acciones</th>
+                        <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,9 +32,11 @@
                         <td><span class="badge badge-{% if c.prioridad == 'urgente' or c.prioridad == 'alta' %}danger{% elif c.prioridad == 'media' %}warning{% else %}secondary{% endif %}">{{ c.get_prioridad_display }}</span></td>
                         <td>{{ c.get_estado_display }}</td>
                         <td>S/ {{ c.costo|floatformat:2 }}</td>
-                        <td>
-                            <a href="{% url 'correctivo-edit' c.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                            <a href="{% url 'correctivo-delete' c.id %}" class="btn btn-danger btn-sm btn-eliminar"><i class="fas fa-trash"></i></a>
+                        <td class="td-acciones">
+                            <div class="tabla-acciones">
+                                <a href="{% url 'correctivo-edit' c.id %}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'correctivo-delete' c.id %}" class="btn btn-danger btn-sm btn-eliminar" title="Eliminar"><i class="fas fa-trash"></i></a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}

@@ -16,7 +16,7 @@
             <th>Usuario</th>
             <th>Nombre</th>
             <th>Correo</th>
-            <th>Acciones</th>
+            <th class="col-acciones">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -30,15 +30,17 @@
             </td>
             <td>{{ admin.get_full_name|default:"—" }}</td>
             <td>{{ admin.email|default:"—" }}</td>
-            <td class="text-nowrap">
-              <a href="{% url 'editar_administrador' admin.id %}" class="btn btn-sm btn-warning" title="Editar usuario y contraseña">
-                <i class="fas fa-edit"></i>
-              </a>
-              {% if admin.id != request.user.id and admin.username != 'admin' %}
-              <a href="{% url 'eliminar_administrador' admin.id %}" class="btn btn-sm btn-danger btn-eliminar" title="Eliminar">
-                <i class="fas fa-trash-alt"></i>
-              </a>
-              {% endif %}
+            <td class="td-acciones">
+              <div class="tabla-acciones">
+                <a href="{% url 'editar_administrador' admin.id %}" class="btn btn-sm btn-warning" title="Editar usuario y contraseña">
+                  <i class="fas fa-edit"></i>
+                </a>
+                {% if admin.id != request.user.id and admin.username != 'admin' %}
+                <a href="{% url 'eliminar_administrador' admin.id %}" class="btn btn-sm btn-danger btn-eliminar" title="Eliminar">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+                {% endif %}
+              </div>
             </td>
           </tr>
           {% empty %}

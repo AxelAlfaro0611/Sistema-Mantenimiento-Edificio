@@ -21,7 +21,7 @@
                         <th>Fecha ejecutada</th>
                         <th>Estado</th>
                         <th>Costo</th>
-                        <th>Acciones</th>
+                        <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,11 +37,13 @@
                             </span>
                         </td>
                         <td>S/ {{ p.costo|floatformat:2 }}</td>
-                        <td>
-                            {% if p.estado != 'ejecutado' %}
-                            <a href="{% url 'preventivo-ejecutar' p.id %}" class="btn btn-success btn-sm" title="Marcar ejecutado"><i class="fas fa-check"></i></a>
-                            {% endif %}
-                            <a href="{% url 'preventivo-edit' p.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                        <td class="td-acciones">
+                            <div class="tabla-acciones">
+                                {% if p.estado != 'ejecutado' %}
+                                <a href="{% url 'preventivo-ejecutar' p.id %}" class="btn btn-success btn-sm" title="Marcar ejecutado"><i class="fas fa-check"></i></a>
+                                {% endif %}
+                                <a href="{% url 'preventivo-edit' p.id %}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}

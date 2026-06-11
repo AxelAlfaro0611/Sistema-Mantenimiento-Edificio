@@ -275,6 +275,27 @@ input[type="number"] {
   padding: 0.35rem 0.65rem;
 }
 
+/* Botones de acción en tablas */
+.tabla-acciones {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.tabla-acciones .btn {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+td.td-acciones,
+th.col-acciones {
+  text-align: center;
+  white-space: nowrap;
+  width: 1%;
+}
+
 /* Contenedor principal */
 .container-fluid {
   padding-left: 1.15rem;
@@ -283,8 +304,16 @@ input[type="number"] {
 
 .chart-area {
   position: relative;
-  height: 280px;
+  height: 320px;
   width: 100%;
+}
+
+.chart-area--gastos {
+  min-height: 320px;
+}
+
+.chart-card .card-body {
+  padding-bottom: 1.25rem;
 }
 
 /* SweetAlert toast */
@@ -562,8 +591,50 @@ input[type="number"] {
     font-size: 0.78rem;
   }
 
-  .table .btn-sm {
-    padding: 0.2rem 0.4rem;
+  .table-responsive .table th.col-acciones,
+  .table-responsive .table td.td-acciones {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    background-color: #fff;
+    box-shadow: -4px 0 8px rgba(58, 59, 69, 0.08);
+  }
+
+  .table-responsive .table thead th.col-acciones {
+    background-color: #4e73df !important;
+    z-index: 3;
+  }
+
+  .table-responsive .table-hover tbody tr:hover td.td-acciones {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  td.td-acciones {
+    white-space: normal;
+    vertical-align: middle;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+
+  .tabla-acciones {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0;
+  }
+
+  .tabla-acciones .btn-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .tabla-acciones .btn-sm i {
+    font-size: 0.8rem;
   }
 
   /* Topbar */
@@ -675,8 +746,15 @@ input[type="number"] {
     margin: 0 0.75rem !important;
   }
 
-  .chart-area {
-    height: 220px;
+  .chart-area,
+  .chart-area--gastos {
+    height: 380px;
+    min-height: 380px;
+  }
+
+  .chart-card .card-body {
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
   }
 }
 

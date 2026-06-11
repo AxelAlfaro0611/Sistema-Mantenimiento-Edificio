@@ -149,10 +149,10 @@
         </div>
     </div>
 
-    <div class="card shadow mb-4">
+    <div class="card shadow mb-4 chart-card">
         <div class="card-body">
             <h5 class="text-center mb-3">Gastos de mantenimiento por mes ({{ anio_seleccionado }})</h5>
-            <div class="chart-area">
+            <div class="chart-area chart-area--gastos">
                 <canvas id="graficoGastos"></canvas>
             </div>
         </div>
@@ -164,26 +164,101 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const labels = JSON.parse('{{ etiquetas_gastos_json|escapejs }}');
+    const labelsCompletos = JSON.parse('{{ etiquetas_gastos_json|escapejs }}');
+    const labelsCortos = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const data = JSON.parse('{{ datos_gastos_json|escapejs }}');
     const ctx = document.getElementById('graficoGastos').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'S/ Gastos',
-          data: data,
-          backgroundColor: 'rgba(78, 115, 223, 0.6)',
-          borderColor: 'rgba(78, 115, 223, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
+
+    function esMobile() {
+      return window.matchMedia('(max-width: 767.98px)').matches;
+    }
+
+    function formatearSoles(valor) {
+      return 'S/ ' + Number(valor).toLocaleString('es-PE', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+    }
+
+    function opcionesGrafico() {
+      const mobile = esMobile();
+      return {
         responsive: true,
         maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } }
-      }
+        layout: {
+          padding: { top: 6, right: 8, bottom: 2, left: 2 },
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            align: 'center',
+            labels: {
+              boxWidth: 14,
+              padding: 14,
+              font: { size: mobile ? 11 : 12 },
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const valor = context.parsed.y || 0;
+                return formatearSoles(valor);
+              },
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              autoSkip: false,
+              maxRotation: mobile ? 0 : 0,
+              minRotation: 0,
+              font: { size: mobile ? 10 : 12 },
+            },
+            grid: { display: false },
+          },
+          y: {
+            beginAtZero: true,
+            grace: '10%',
+            ticks: {
+              maxTicksLimit: mobile ? 6 : 8,
+              padding: 8,
+              font: { size: mobile ? 10 : 12 },
+              callback: function (value) {
+                return formatearSoles(value);
+              },
+            },
+          },
+        },
+      };
+    }
+
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: esMobile() ? labelsCortos : labelsCompletos,
+        datasets: [{
+          label: 'Gastos (S/)',
+          data: data,
+          backgroundColor: 'rgba(78, 115, 223, 0.65)',
+          borderColor: 'rgba(78, 115, 223, 1)',
+          borderWidth: 1,
+          borderRadius: 4,
+          maxBarThickness: esMobile() ? 18 : 42,
+        }],
+      },
+      options: opcionesGrafico(),
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        chart.data.labels = esMobile() ? labelsCortos : labelsCompletos;
+        chart.options = opcionesGrafico();
+        chart.update();
+      }, 150);
     });
   });
 </script>

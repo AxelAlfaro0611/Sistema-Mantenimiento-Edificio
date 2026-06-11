@@ -53,7 +53,7 @@
                         <th>Cantidad</th>
                         <th>Ubicación inst.</th>
                         <th>Costo</th>
-                        <th>Acciones</th>
+                        <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,9 +66,11 @@
                         <td>{{ c.cantidad }} {{ c.get_unidad_display }}</td>
                         <td>{{ c.ubicacion_instalacion|default:"—" }}</td>
                         <td>S/ {{ c.costo|floatformat:2 }}</td>
-                        <td>
-                            <a href="{% url 'compra-edit' c.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                            <a href="{% url 'compra-delete' c.id %}" class="btn btn-danger btn-sm btn-eliminar"><i class="fas fa-trash"></i></a>
+                        <td class="td-acciones">
+                            <div class="tabla-acciones">
+                                <a href="{% url 'compra-edit' c.id %}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'compra-delete' c.id %}" class="btn btn-danger btn-sm btn-eliminar" title="Eliminar"><i class="fas fa-trash"></i></a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}

@@ -79,7 +79,7 @@
 
                         <th>Total gastos</th>
 
-                        <th>Detalle</th>
+                        <th class="col-acciones">Detalle</th>
 
                     </tr>
 
@@ -105,7 +105,11 @@
 
                         <td class="font-weight-bold">S/ {{ d.total_gastos|floatformat:2 }}</td>
 
-                        <td><a href="{% url 'equipo-detalle' d.equipo.id %}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a></td>
+                        <td class="td-acciones">
+                            <div class="tabla-acciones">
+                                <a href="{% url 'equipo-detalle' d.equipo.id %}" class="btn btn-info btn-sm" title="Ver detalle"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </td>
 
                     </tr>
 
