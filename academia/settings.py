@@ -26,10 +26,11 @@ SECRET_KEY = 'django-insecure-chyk@8$ors$pbw^y78_d(w&#@x^(4$cj99ip4yl9a8*i-7ti36
 DEBUG = True
 
 
-ALLOWED_HOSTS = [] 
-""" DESCOMENTAR PARA SUBIR A PYTHONANYWHERE """
-
-""" ALLOWED_HOSTS = ['aphelion.pythonanywhere.com'] """
+ALLOWED_HOSTS = [
+    'mantenimientodeedificio.pythonanywhere.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -113,7 +114,8 @@ USE_L10N = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
