@@ -312,6 +312,10 @@ th.col-acciones {
   min-height: 320px;
 }
 
+.chart-scroll-mobile {
+  width: 100%;
+}
+
 .chart-card .card-body {
   padding-bottom: 1.25rem;
 }
@@ -746,10 +750,19 @@ th.col-acciones {
     margin: 0 0.75rem !important;
   }
 
-  .chart-area,
-  .chart-area--gastos {
-    height: 380px;
-    min-height: 380px;
+  .chart-scroll-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-left: -0.35rem;
+    margin-right: -0.35rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .chart-scroll-mobile .chart-area--gastos {
+    min-width: 34rem;
+    width: 34rem;
+    height: 300px;
+    min-height: 300px;
   }
 
   .chart-card .card-body {

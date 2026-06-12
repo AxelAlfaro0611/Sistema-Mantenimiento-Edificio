@@ -152,8 +152,11 @@
     <div class="card shadow mb-4 chart-card">
         <div class="card-body">
             <h5 class="text-center mb-3">Gastos de mantenimiento por mes ({{ anio_seleccionado }})</h5>
-            <div class="chart-area chart-area--gastos">
-                <canvas id="graficoGastos"></canvas>
+            <p class="text-muted small text-center d-md-none mb-2">Desliza horizontalmente para ver todos los meses</p>
+            <div class="chart-scroll-mobile">
+                <div class="chart-area chart-area--gastos">
+                    <canvas id="graficoGastos"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -161,7 +164,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const labelsCompletos = JSON.parse('{{ etiquetas_gastos_json|escapejs }}');
@@ -180,13 +183,27 @@
       });
     }
 
+    function calcularEscalaY(valores) {
+      const max = Math.max.apply(null, valores.concat([0]));
+      if (max === 0) {
+        return { max: 1000, step: 200 };
+      }
+      if (max <= 500) return { max: 500, step: 100 };
+      if (max <= 2000) return { max: 2000, step: 500 };
+      if (max <= 5000) return { max: 5000, step: 1000 };
+      const step = Math.pow(10, Math.floor(Math.log10(max)) - 1) * 5;
+      const maxEje = Math.ceil(max * 1.15 / step) * step;
+      return { max: maxEje, step: step };
+    }
+
     function opcionesGrafico() {
       const mobile = esMobile();
+      const escalaY = calcularEscalaY(data);
       return {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { top: 6, right: 8, bottom: 2, left: 2 },
+          padding: { top: 8, right: 12, bottom: 4, left: 4 },
         },
         plugins: {
           legend: {
@@ -195,15 +212,19 @@
             align: 'center',
             labels: {
               boxWidth: 14,
-              padding: 14,
+              padding: 12,
               font: { size: mobile ? 11 : 12 },
             },
           },
           tooltip: {
             callbacks: {
+              title: function (items) {
+                if (!items.length) return '';
+                const idx = items[0].dataIndex;
+                return labelsCompletos[idx] || items[0].label;
+              },
               label: function (context) {
-                const valor = context.parsed.y || 0;
-                return formatearSoles(valor);
+                return formatearSoles(context.parsed.y || 0);
               },
             },
           },
@@ -212,18 +233,19 @@
           x: {
             ticks: {
               autoSkip: false,
-              maxRotation: mobile ? 0 : 0,
+              maxRotation: 0,
               minRotation: 0,
-              font: { size: mobile ? 10 : 12 },
+              font: { size: mobile ? 11 : 12 },
             },
             grid: { display: false },
           },
           y: {
             beginAtZero: true,
-            grace: '10%',
+            min: 0,
+            max: escalaY.max,
             ticks: {
-              maxTicksLimit: mobile ? 6 : 8,
-              padding: 8,
+              stepSize: escalaY.step,
+              padding: 6,
               font: { size: mobile ? 10 : 12 },
               callback: function (value) {
                 return formatearSoles(value);
@@ -234,31 +256,45 @@
       };
     }
 
+    function opcionesDataset() {
+      const mobile = esMobile();
+      return {
+        label: 'Gastos (S/)',
+        data: data,
+        backgroundColor: 'rgba(78, 115, 223, 0.65)',
+        borderColor: 'rgba(78, 115, 223, 1)',
+        borderWidth: 1,
+        borderRadius: 4,
+        maxBarThickness: mobile ? 28 : 48,
+        categoryPercentage: mobile ? 0.85 : 0.7,
+        barPercentage: 0.9,
+      };
+    }
+
     const chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: esMobile() ? labelsCortos : labelsCompletos,
-        datasets: [{
-          label: 'Gastos (S/)',
-          data: data,
-          backgroundColor: 'rgba(78, 115, 223, 0.65)',
-          borderColor: 'rgba(78, 115, 223, 1)',
-          borderWidth: 1,
-          borderRadius: 4,
-          maxBarThickness: esMobile() ? 18 : 42,
-        }],
+        datasets: [opcionesDataset()],
       },
       options: opcionesGrafico(),
     });
 
+    function actualizarGrafico() {
+      chart.data.labels = esMobile() ? labelsCortos : labelsCompletos;
+      chart.data.datasets[0] = opcionesDataset();
+      const escalaY = calcularEscalaY(data);
+      chart.options.scales.y.max = escalaY.max;
+      chart.options.scales.y.ticks.stepSize = escalaY.step;
+      chart.options.scales.x.ticks.font.size = esMobile() ? 11 : 12;
+      chart.options.scales.y.ticks.font.size = esMobile() ? 10 : 12;
+      chart.update();
+    }
+
     let resizeTimer;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        chart.data.labels = esMobile() ? labelsCortos : labelsCompletos;
-        chart.options = opcionesGrafico();
-        chart.update();
-      }, 150);
+      resizeTimer = setTimeout(actualizarGrafico, 150);
     });
   });
 </script>
