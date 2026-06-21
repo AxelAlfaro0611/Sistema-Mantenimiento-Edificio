@@ -15,7 +15,7 @@ from core.models import (
 EQUIPOS_DEMO = [
     {
         'nombre': 'Ascensor principal - Torre A',
-        'categoria': 'ascensor',
+        'categoria': 'ascensores',
         'ubicacion': 'Torre A - Shaft central',
         'marca': 'Otis',
         'modelo': 'Gen2',
@@ -26,7 +26,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Ascensor de servicio - Torre B',
-        'categoria': 'ascensor',
+        'categoria': 'ascensores',
         'ubicacion': 'Torre B - Acceso estacionamiento',
         'marca': 'Schindler',
         'modelo': '3300',
@@ -37,7 +37,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Chiller central planta 1',
-        'categoria': 'aire_acondicionado',
+        'categoria': 'aire_acondicionado_termosistemas',
         'ubicacion': 'Azotea - Planta de frío',
         'marca': 'Carrier',
         'modelo': '30XW',
@@ -48,7 +48,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Split lobby principal',
-        'categoria': 'aire_acondicionado',
+        'categoria': 'aire_acondicionado_termosistemas',
         'ubicacion': 'Primer piso - Lobby',
         'marca': 'Daikin',
         'modelo': 'FTXM35',
@@ -59,7 +59,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'CCTV y control de acceso',
-        'categoria': 'seguridad',
+        'categoria': 'sistemas_seguridad_control',
         'ubicacion': 'Todo el edificio',
         'marca': 'Hikvision',
         'modelo': 'Sistema integrado',
@@ -70,7 +70,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Sistema de detección y extinción',
-        'categoria': 'incendios',
+        'categoria': 'sistemas_contra_incendio',
         'ubicacion': 'Sótanos y niveles 1-12',
         'marca': 'Notifier',
         'modelo': 'NFS2-3030',
@@ -81,7 +81,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Tablero general BT',
-        'categoria': 'electrico',
+        'categoria': 'instalaciones_electricas',
         'ubicacion': 'Sótano 2 - Cuarto eléctrico',
         'marca': 'ABB',
         'modelo': 'Tmax XT4',
@@ -92,7 +92,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Bomba de presión de agua',
-        'categoria': 'plomeria',
+        'categoria': 'instalaciones_sanitarias',
         'ubicacion': 'Sótano 1 - Cisterna',
         'marca': 'Grundfos',
         'modelo': 'CR 32-4',
@@ -103,7 +103,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Generador de emergencia 250 KVA',
-        'categoria': 'generadores',
+        'categoria': 'grupos_electrogenos',
         'ubicacion': 'Azotea - Casa de máquinas',
         'marca': 'Cummins',
         'modelo': 'C250 D5',
@@ -114,7 +114,7 @@ EQUIPOS_DEMO = [
     },
     {
         'nombre': 'Portón vehicular automático',
-        'categoria': 'otros',
+        'categoria': 'puertas_vehiculares',
         'ubicacion': 'Estacionamiento - Acceso principal',
         'marca': 'Nice',
         'modelo': 'Robus 600',

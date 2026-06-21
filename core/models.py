@@ -7,15 +7,81 @@ from django.db.models import Sum
 
 
 CATEGORIA_EQUIPO_CHOICES = [
-    ('ascensor', 'Ascensores'),
-    ('aire_acondicionado', 'Aire acondicionado'),
-    ('seguridad', 'Sistemas de seguridad y control'),
-    ('incendios', 'Sistema contra incendios'),
-    ('electrico', 'Instalaciones eléctricas'),
-    ('plomeria', 'Plomería y sanitarios'),
-    ('generadores', 'Generadores y respaldo eléctrico'),
-    ('otros', 'Otros'),
+    ('acelerografo', 'Acelerógrafo'),
+    ('ascensores', 'Ascensores'),
+    ('barreras_peatonales', 'Barreras peatonales'),
+    ('barreras_vehiculares', 'Barreras vehiculares'),
+    ('bombas_agua_desague', 'Bombas de agua y desagüe'),
+    ('charlas_simulacros', 'Charlas y simulacros'),
+    ('desinfeccion', 'Desinfección'),
+    ('desratizacion', 'Desratización'),
+    ('equipos_extraccion_monoxido', 'Equipos de extracción de monóxido'),
+    ('equipos_inyeccion_aire', 'Equipos de inyección de aire'),
+    ('equipos_presurizacion_escaleras', 'Equipos de presurización de escaleras'),
+    ('equipos_ventilacion_mecanica', 'Equipos de ventilación mecánica'),
+    ('escaleras_electricas', 'Escaleras eléctricas'),
+    ('estructuras_metalicas', 'Estructuras metálicas'),
+    ('extintores', 'Extintores'),
+    ('fumigacion', 'Fumigación'),
+    ('grupos_electrogenos', 'Grupos electrógenos'),
+    ('iluminacion_externa_fachada', 'Iluminación externa de fachada'),
+    ('impermeabilizacion_manto_asfaltico', 'Impermeabilización | Manto asfáltico'),
+    ('inspeccion_muro_cortina', 'Inspección de muro cortina'),
+    ('limpieza_cisternas', 'Limpieza de cisternas'),
+    ('limpieza_fachadas', 'Limpieza de fachadas'),
+    ('luces_emergencia', 'Luces de emergencia'),
+    ('mamparas', 'Mamparas'),
+    ('plataforma_discapacidad', 'Plataforma para personas con discapacidad'),
+    ('pozos_tierra', 'Pozos a tierra'),
+    ('pozos_sumideros', 'Pozos sumideros'),
+    ('puertas_corta_fuego', 'Puertas corta fuego'),
+    ('puertas_vehiculares', 'Puertas vehiculares'),
+    ('aire_acondicionado_termosistemas', 'Sistema de aire acondicionado (Termosistemas)'),
+    ('aire_acondicionado_johnson', 'Sistema de aire acondicionado (Johnson Controls)'),
+    ('ablandador_agua', 'Ablandador de agua'),
+    ('sistemas_contra_incendio', 'Sistemas contra incendio'),
+    ('sistemas_seguridad_control', 'Sistemas de seguridad y control'),
+    ('sub_estacion_electrica', 'Sub estación eléctrica'),
+    ('tableros_transferencia_distribucion', 'Tableros de transferencia | Distribución | Otros relacionados'),
+    ('tableros_electricos', 'Tableros eléctricos'),
+    ('ups', 'UPS'),
+    ('alfombras_cortinas_otros', 'Alfombras, cortinas y otros'),
+    ('anclajes_davits_soportes', 'Anclajes | Davits | Soportes *'),
+    ('baldosas_cielo_raso', 'Baldosas y cielo raso'),
+    ('carpinteria', 'Carpintería'),
+    ('cerrajeria', 'Cerrajería'),
+    ('equipos_computo', 'Equipos de cómputo *'),
+    ('equipos_multimedia', 'Equipos y sistemas multimedia*'),
+    ('fachadas', 'Fachadas'),
+    ('ferreteria_herramientas', 'Ferretería y herramientas'),
+    ('gestion_residuos', 'Gestión de residuos'),
+    ('granito', 'Granito'),
+    ('instalaciones_electricas', 'Instalaciones eléctricas'),
+    ('instalaciones_sanitarias', 'Instalaciones sanitarias'),
+    ('jardineria', 'Jardinería'),
+    ('limpieza_estacionamientos', 'Limpieza de estacionamientos'),
+    ('materiales_sshh_ambientadores', 'Materiales de SSHH y ambientadores'),
+    ('paredes_techos_pisos_enchapes', 'Paredes | Techos | Pisos | Enchapes'),
+    ('pintura', 'Pintura'),
+    ('recarga_combustible', 'Recarga de combustible'),
+    ('sala_usos_multiples', 'Sala de usos múltiples (SUM)'),
+    ('suministro_sal', 'Suministro de sal'),
+    ('suministro_productos_quimicos', 'Suministro y servicio de productos químicos'),
+    ('suministros_seguridad', 'Suministros de seguridad'),
+    ('comunicaciones', 'Comunicaciones'),
+    ('varios', 'Varios'),
 ]
+
+CATEGORIA_EQUIPO_LEGACY_MAP = {
+    'ascensor': 'ascensores',
+    'aire_acondicionado': 'aire_acondicionado_termosistemas',
+    'seguridad': 'sistemas_seguridad_control',
+    'incendios': 'sistemas_contra_incendio',
+    'electrico': 'instalaciones_electricas',
+    'plomeria': 'instalaciones_sanitarias',
+    'generadores': 'grupos_electrogenos',
+    'otros': 'varios',
+}
 
 FRECUENCIA_CHOICES = [
     ('mensual', 'Mensual'),
@@ -50,7 +116,7 @@ class Administrador(AbstractUser):
 
 class Equipo(models.Model):
     nombre = models.CharField(max_length=200)
-    categoria = models.CharField(max_length=50, choices=CATEGORIA_EQUIPO_CHOICES, default='otros')
+    categoria = models.CharField(max_length=80, choices=CATEGORIA_EQUIPO_CHOICES, default='varios')
     ubicacion = models.CharField(max_length=200)
     marca = models.CharField(max_length=100, blank=True)
     modelo = models.CharField(max_length=100, blank=True)

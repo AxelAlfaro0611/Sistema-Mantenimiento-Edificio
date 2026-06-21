@@ -28,6 +28,7 @@ from .reportes_export import (
     obtener_datos_reporte_equipos,
 )
 from .models import (
+    CATEGORIA_EQUIPO_CHOICES,
     CompraInsumo,
     Equipo,
     MantenimientoCorrectivo,
@@ -125,6 +126,7 @@ def equipos_list(request):
         'equipos': equipos,
         'q': query,
         'categoria_seleccionada': categoria,
+        'categorias_equipo': CATEGORIA_EQUIPO_CHOICES,
     })
 
 

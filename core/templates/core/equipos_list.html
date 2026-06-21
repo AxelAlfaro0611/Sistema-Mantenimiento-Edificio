@@ -16,14 +16,9 @@
             <div class="col-12 col-sm-6 col-md-3 mb-2">
                 <select name="categoria" class="form-control">
                     <option value="">Todas las categorías</option>
-                    <option value="ascensor" {% if categoria_seleccionada == 'ascensor' %}selected{% endif %}>Ascensores</option>
-                    <option value="aire_acondicionado" {% if categoria_seleccionada == 'aire_acondicionado' %}selected{% endif %}>Aire acondicionado</option>
-                    <option value="seguridad" {% if categoria_seleccionada == 'seguridad' %}selected{% endif %}>Seguridad y control</option>
-                    <option value="incendios" {% if categoria_seleccionada == 'incendios' %}selected{% endif %}>Contra incendios</option>
-                    <option value="electrico" {% if categoria_seleccionada == 'electrico' %}selected{% endif %}>Eléctrico</option>
-                    <option value="plomeria" {% if categoria_seleccionada == 'plomeria' %}selected{% endif %}>Plomería</option>
-                    <option value="generadores" {% if categoria_seleccionada == 'generadores' %}selected{% endif %}>Generadores</option>
-                    <option value="otros" {% if categoria_seleccionada == 'otros' %}selected{% endif %}>Otros</option>
+                    {% for value, label in categorias_equipo %}
+                    <option value="{{ value }}" {% if categoria_seleccionada == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="col-12 col-sm-6 col-md-2 mb-2">
